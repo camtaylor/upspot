@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'home',
     'park'
 ]
 
@@ -82,6 +83,7 @@ DATABASES = {
         'NAME': 'upspot',
         'USER' : 'upspot',
         'PASSWORD' : 'upspot',
+        'HOST' : 'localhost',
         'PORT' : '5432',
     }
 }
