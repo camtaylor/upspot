@@ -1,5 +1,5 @@
 {% extends "park/base.html" %}
-{% block content %}
+{% block padded_content %}
 <style type="text/css">
       #map { height: 82%; }
       #wrapper { position: relative; }
@@ -10,21 +10,22 @@
       }
       .card {
         position: absolute; z-index: 99; margin-left: 10px;;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
       }
     </style>
 
-    <h2 id="address_name" class="page-header" style="padding-left: 2%;">Upspots Near You</h2>
-    <div class="col-md-3">
-      <div class="list-group" style="margin:0px; width: 100%; padding: 0px;">
-     {% for spot in spots %}
-     <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
-     {% empty %}
-     <a class="list-group-item"><h4> No spots found in the given radius. </h4></a>
-     {% endfor %}
-   </div>
-    </div>
+    <h4 id="address_name" class="page-header" style="padding-left: 2%; margin-bottom: 0px;">Upspots Near You</h4>
 
-<div class="col-md-9">
+<div class="col-md-2">
+  <div class="list-group card" style="margin-left: 0px; width: 100%;">
+ {% for spot in spots %}
+ <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
+ {% empty %}
+ <a class="list-group-item"><h5> No spots found in the given radius. </h5></a>
+ {% endfor %}
+</div>
+</div>
+<div class="col-md-10">
 <!-- <form class="form" action="/park/" method="POST">
 {% csrf_token %}
   <h4>Address</h4>

@@ -26,7 +26,7 @@ def user_login(request):
     if user is not None:
       if user.is_active:
         login(request, user)
-        return redirect('/analytics')
+        return redirect('/park')
     return render(request, 'home/login_static.html', {"login_error" : "Unrecognized username or password."})
   else:
     return render(request, 'home/login_static.html', {})
