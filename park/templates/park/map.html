@@ -16,7 +16,7 @@
 
     <h4 id="address_name" class="page-header" style="padding-left: 2%; margin-bottom: 0px;">Upspots Near You</h4>
 
-<div class="col-md-2">
+<div class="col-md-3">
   <div class="list-group card" style="margin-left: 0px; width: 100%;">
  {% for spot in spots %}
  <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
@@ -25,7 +25,7 @@
  {% endfor %}
 </div>
 </div>
-<div class="col-md-10">
+<div class="col-md-9">
 <!-- <form class="form" action="/park/" method="POST">
 {% csrf_token %}
   <h4>Address</h4>

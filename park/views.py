@@ -20,5 +20,4 @@ def reserve_spot(request):
   """
     View to handle booking a spot.
   """
-
-def 
+  return redirct('/')
