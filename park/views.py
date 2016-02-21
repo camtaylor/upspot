@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
-from models import Spot
+from models import Spot, Vehicle
 
 # Create your views here.
 def map(request):
@@ -25,13 +25,23 @@ def add_spot(request):
     new_spot.location = Point(longitude, lattitude)
     new_spot.address = address
     new_spot.save()
-    return redirect('/park/add')
+    return redirect('/park/spots')
 
 def add_vehicle(request):
   """
     View to add a new vehicle to upspot.
   """
-  return redirect('/')
+  if request.method == 'GET':
+    vehicles = Vehicle.objects.all()
+    return render(request, 'park/vehicle.html', {'vehicles' : vehicles})
+  elif request.method =='POST':
+    make = request.POST.get("make")
+    model = request.POST.get("model")
+    new_vehicle = Vehicle()
+    new_vehicle.make = make
+    new_vehicle.model = model
+    new_vehicle.save()
+    return redirect('/park/vehicles')
 
 def reserve_spot(request):
   """

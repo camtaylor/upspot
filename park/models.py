@@ -14,9 +14,10 @@ class Spot(models.Model):
   num_reservations = models.IntegerField(default=0)
 
 class Vehicle(models.Model):
-  owner = models.ForeignKey(User, on_delete=models.CASCADE)
+  owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
   make = models.CharField(max_length=50)
   model = models.CharField(max_length=50)
+  license_plate = models.CharField(max_length=20, default="XXXXXXX")
 
 class Reservation(models.Model):
   spot = models.ForeignKey(Spot)

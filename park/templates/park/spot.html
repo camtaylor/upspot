@@ -23,7 +23,7 @@
       <div class="panel-content">
         <div class="well" >
 
-          <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/park/add/">
+          <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/park/spots/">
             {% csrf_token %}
             <fieldset>
               <div class="control-group">
@@ -59,7 +59,7 @@
               <div class="control-group">
                 <!-- Button -->
                 <div class="controls">
-                  <button class="btn btn-success btn-lg" type="submit" style="display: block; width: 100%;"><span class="glyphicon-plus"> Add Spot</button>
+                  <button class="btn btn-success btn-lg" type="submit" style="display: block; width: 100%;"> Add Spot</button>
                   </div>
                 </div>
               </fieldset>
@@ -69,13 +69,13 @@
       </div>
     </div>
     <div class="col-md-6">
-      <br/>
+      <!-- <br/>
       <div class="wrapper">
         <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
         <div id="map"></div
       </div>
-    </div>
-    <h4 class="page-header">Your spots</h4>
+    </div> -->
+    <h4 class="page-header" style="margin-top: 10px;">Your spots</h4>
     <div class="list-group card" style="margin-left: 0px; width: 100%;">
       {% for spot in spots %}
       <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
