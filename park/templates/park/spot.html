@@ -1,0 +1,214 @@
+{% extends 'park/base.html' %}
+
+{% block padded_content %}
+
+<style>
+.card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.form-group{
+  border-bottom: 1px solid #000000;
+}
+
+#map { height: 40%; }
+#wrapper { position: relative;}
+#termsCheckbox {font-size:150%;}
+</style>
+<div class="row">
+  <input id="address_value" type="hidden">
+  <div class="col-md-6">
+    <div class="panel panel-primary">
+      <h4 class="panel-heading">Add a spot</h4>
+      <div class="panel-content">
+        <div class="well" >
+
+          <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/park/add/">
+            {% csrf_token %}
+            <fieldset>
+              <div class="control-group">
+                <h5>Address<small id="available" class="label label-success pull-right" style="display:none;"></small></h5>
+                <div class="controls">
+                  <input  id="Address" type="text" name="address" placeholder="" class="form-control input-lg" required autofocus>
+                </div>
+              </div>
+              <div class="control-group">
+                <h5>Spot Number </h5>
+                <div class="controls">
+                  <input class="form-control input-lg" type="number" placeholder="Leave blank for no spot number" required>
+                </div>
+              </div>
+              <div class="control-group">
+                <h5>Instructions </h5>
+                <div class="controls">
+                  <input class="form-control input-lg" type="text" placeholder="Example: Please pull as far right as possible in driveway." required>
+              </div>
+              <br/>
+              <br/>
+              <div class="control-group">
+                <div class="controls">
+                  <label for="termsCheckbox" style="padding-left: 5px;">
+                    <input id="termsCheckbox" type="checkbox" required>
+                    I understand and agree to the <a href="/terms">terms and conditions.</a>
+                  </label>
+              </div>
+              </div>
+              <br/>
+              <input type="hidden" id="Lat" name="lat">
+              <input type="hidden" id="Lng" name="lng">
+              <div class="control-group">
+                <!-- Button -->
+                <div class="controls">
+                  <button class="btn btn-success btn-lg" type="submit" style="display: block; width: 100%;"><span class="glyphicon-plus"> Add Spot</button>
+                  </div>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <br/>
+      <div class="wrapper">
+        <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
+        <div id="map"></div
+      </div>
+    </div>
+    <h4 class="page-header">Your spots</h4>
+    <div class="list-group card" style="margin-left: 0px; width: 100%;">
+      {% for spot in spots %}
+      <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
+      {% empty %}
+      <a class="list-group-item"><h5> You have not added any spots yet. </h5></a>
+      {% endfor %}
+
+    </div>
+  </div>
+  <script type="text/javascript">
+
+  var map;
+  function initMap() {
+    if (navigator.geolocation && !$('#address_value').val()) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+      $("#loading").show();
+    }
+    else if (!$('#address_value').val()){
+      alert("Geolocation is not supported by this browser.");
+    }
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 15,
+      center: {lat: 37.7749295, lng: -122.4194155}
+    });
+    map.infowindow = new google.maps.InfoWindow();
+    var geocoder = new google.maps.Geocoder();
+    if($('#address_value').val()){
+      $('#Address').val($('#address_value').val());
+      geocodeAddress(geocoder, map);
+      $("#loading").hide();
+    }
+
+
+    document.getElementById('Address').addEventListener('keypress', function(e) {
+      var key = e.which || e.keyCode;
+      if (key === 13) { // 13 is enter
+        // code for enter
+        geocodeAddress(geocoder, map);
+      }
+    });
+  }
+
+  function showPosition(position) {
+    gMap = new google.maps.Map(document.getElementById('map'));
+    gMap.setZoom(15);      // This will trigger a zoom_changed on the map
+    gMap.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+    $("#loading").hide();
+  }
+
+  function geocodeAddress(geocoder, resultsMap) {
+    var address = document.getElementById('Address').value;
+    var map_constant = "Upspots near ";
+    $('#address_name').html(map_constant.concat(address));
+    geocoder.geocode({'address': address}, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+        resultsMap.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+          map: resultsMap,
+          position: results[0].geometry.location
+        });
+        // addSpots(resultsMap);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+  }
+
+  function geocodeCustom(address){
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'address': address}, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+        $("#Lat").val(results[0].geometry.location.lat());
+        $("#Lng").val(results[0].geometry.location.lng());
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+  }
+  $("#termsCheckbox").click(function() {
+    geocodeCustom($("#Address").val());
+    alert("Blur");
+  });
+
+  function addSpots(resultsMap){
+    {% for spot in spots %}
+    var contentString = '<div id="content">'+
+    '<div id="siteNotice">'+
+    '</div>'+
+    '<h2 id="firstHeading" class="firstHeading">{{spot.address}}</h2>'+
+    '<div id="bodyContent">'+
+    '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
+    'sandstone rock formation in the southern part of the '+
+    'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
+    'south west of the nearest large town, Alice Springs; 450&#160;km '+
+    '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
+    'features of the Uluru - Kata Tjuta National Park. Uluru is '+
+    'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
+    'Aboriginal people of the area. It has many springs, waterholes, '+
+    'rock caves and ancient paintings. Uluru is listed as a World '+
+    'Heritage Site.</p>'+
+    '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
+    'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
+    '(last visited June 22, 2009).</p>'+
+    '</div>'+
+    '</div>';
+
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+    var marker = new google.maps.Marker({
+      map: resultsMap,
+      icon: "https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png",
+      position: new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}})
+    });
+    marker.content = contentString;
+    marker.addListener('click', function() {
+      resultsMap.infowindow.setContent(this.content);
+      resultsMap.infowindow.open(resultsMap,this);
+      // infowindow.open(resultsMap, this);
+      // resultsMap.setCenter(this.position);
+    });
+    {% endfor %}
+
+  }
+
+
+  // function searchSpots(lat, lng, 4500){
+  //
+  // }
+  </script>
+
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfOs1dFoBHGmWzp93za9hYSLEWy7YUoDE&callback=initMap">
+</script>
+
+  {% endblock %}

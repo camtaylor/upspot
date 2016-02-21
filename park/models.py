@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Spot(models.Model):
-  owner = models.ForeignKey(User, on_delete=models.CASCADE)
+  owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
   address = models.CharField(max_length=100)
   available = models.BooleanField(default=False)
   location = models.PointField()

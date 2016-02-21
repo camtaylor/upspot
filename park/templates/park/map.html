@@ -1,33 +1,49 @@
 {% extends "park/base.html" %}
-{% block padded_content %}
+{% block content %}
 <style type="text/css">
-      #map { height: 82%; }
-      #wrapper { position: relative; }
-      #loading {
-        position: absolute; z-index: 99; opacity: .5;left:0;
-    right:0;
-    margin:20 auto;
-      }
-      .card {
-        position: absolute; z-index: 99; margin-left: 10px;;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-      }
-    </style>
+#map { height: 82%; }
+#wrapper { position: relative; }
+#loading {
+  position: absolute; z-index: 99; opacity: .5;left:0;
+  right:0;
+  margin:20 auto;
+}
+.card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
 
-    <h4 id="address_name" class="page-header" style="padding-left: 2%; margin-bottom: 0px;">Upspots Near You</h4>
-
+</style>
+<div class="row">
+  <div class="col-md-3">
+    <h4 id="address_name" class="page-header" style="padding-left: 2%; margin-top: 7px;">
+      Spots <label class="badge">{{spot_count}}</label>
+    </h4>
+  </div>
+  <div class="col-md-9">
+    <form action="/park" method="GET" role="search" style="padding-left: 10px;padding-right: 10px;">
+      <div class="form-group">
+        <div class="input-group">
+      <input id="searchBox" name="search" type="text" class="form-control input-lg" placeholder="Search an address for spots near by">
+      <span class="input-group-btn">
+        <button class="btn btn-success" type="submit" ><span class="glyphicon glyphicon-search" style="padding-right:5px;"></span> Search</button>
+      </span>
+    </div><!-- /input-group -->
+      </div>
+    </form>
+  </div>
+</div>
 <div class="col-md-3">
   <div class="list-group card" style="margin-left: 0px; width: 100%;">
- {% for spot in spots %}
- <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
- {% empty %}
- <a class="list-group-item"><h5> No spots found in the given radius. </h5></a>
- {% endfor %}
-</div>
+    {% for spot in spots %}
+    <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
+    {% empty %}
+    <a class="list-group-item"><h5> No spots found in the given radius. </h5></a>
+    {% endfor %}
+  </div>
 </div>
 <div class="col-md-9">
-<!-- <form class="form" action="/park/" method="POST">
-{% csrf_token %}
+  <!-- <form class="form" action="/park/" method="POST">
+  {% csrf_token %}
   <h4>Address</h4>
   <input id="Address" style="width:100%;" type="text" name="address">
   <h4>Instructions</h4>
@@ -39,21 +55,21 @@
   <button class="btn btn-success" type="submit">Submit</button>
 </form> -->
 <div class="wrapper">
-<img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
-<div id="map"></div>
+  <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
+  <div id="map"></div>
 </div>
 </div>
-    <input id="address_value" type="hidden" value="{{search}}">
-    <script type="text/javascript">
+<input id="address_value" type="hidden" value="{{search}}">
+<script type="text/javascript">
 
 var map;
 function initMap() {
   if (navigator.geolocation && !$('#address_value').val()) {
-      navigator.geolocation.getCurrentPosition(showPosition);
-      $("#loading").show();
+    navigator.geolocation.getCurrentPosition(showPosition);
+    $("#loading").show();
   }
   else if (!$('#address_value').val()){
-      alert("Geolocation is not supported by this browser.");
+    alert("Geolocation is not supported by this browser.");
   }
   var map = new google.maps.Map(document.getElementById('map'), {
     zoom: 15,
@@ -62,9 +78,9 @@ function initMap() {
   map.infowindow = new google.maps.InfoWindow();
   var geocoder = new google.maps.Geocoder();
   if($('#address_value').val()){
-  $('#searchBox').val($('#address_value').val());
-  geocodeAddress(geocoder, map);
-  $("#loading").hide();
+    $('#searchBox').val($('#address_value').val());
+    geocodeAddress(geocoder, map);
+    $("#loading").hide();
   }
 
 
@@ -78,16 +94,14 @@ function initMap() {
 }
 
 function showPosition(position) {
-    gMap = new google.maps.Map(document.getElementById('map'));
-    gMap.setZoom(15);      // This will trigger a zoom_changed on the map
-    gMap.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
-    $("#loading").hide();
+  gMap = new google.maps.Map(document.getElementById('map'));
+  gMap.setZoom(15);      // This will trigger a zoom_changed on the map
+  gMap.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+  $("#loading").hide();
 }
 
 function geocodeAddress(geocoder, resultsMap) {
   var address = document.getElementById('searchBox').value;
-  var map_constant = "Upspots near ";
-  $('#address_name').html(map_constant.concat(address));
   geocoder.geocode({'address': address}, function(results, status) {
     if (status === google.maps.GeocoderStatus.OK) {
       resultsMap.setCenter(results[0].geometry.location);
@@ -111,7 +125,7 @@ function geocodeCustom(address){
     } else {
       alert('Geocode was not successful for the following reason: ' + status);
     }
-    });
+  });
 }
 $("#Address").blur(function() {
   geocodeCustom($("#Address").val());
@@ -121,29 +135,22 @@ $("#Address").blur(function() {
 function addSpots(resultsMap){
   {% for spot in spots %}
   var contentString = '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h2 id="firstHeading" class="firstHeading">{{spot.address}}</h2>'+
-      '<div id="bodyContent">'+
-      '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
-      'sandstone rock formation in the southern part of the '+
-      'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
-      'south west of the nearest large town, Alice Springs; 450&#160;km '+
-      '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
-      'features of the Uluru - Kata Tjuta National Park. Uluru is '+
-      'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
-      'Aboriginal people of the area. It has many springs, waterholes, '+
-      'rock caves and ancient paintings. Uluru is listed as a World '+
-      'Heritage Site.</p>'+
-      '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
-      'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
-      '(last visited June 22, 2009).</p>'+
-      '</div>'+
-      '</div>';
+  '<div id="siteNotice">'+
+  '</div>'+
+  '<h4 id="firstHeading" class="page-header">{{spot.address}}</h4>'+
+  '<div id="bodyContent">'+
+  '<h5>Distance: 2.5 Miles</h5>' +
+  '<h5>Price: $5.00</h5>' +
+  '<h5>Seller Rating: 4.5</h5>' +
+  '<h5>Spot Rating: 3.5</h5>' +
+  '<h5>Available Until: 7:30 PM</h5>' +
+  '<br/><button class="btn btn-lg btn-success" style="width: 100%;"> Reserve Spot</button>' +
+  '</div>'+
+  '</div>';
 
   var infowindow = new google.maps.InfoWindow({
-  content: contentString
-});
+    content: contentString
+  });
   var marker = new google.maps.Marker({
     map: resultsMap,
     icon: "https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png",
@@ -155,7 +162,7 @@ function addSpots(resultsMap){
     resultsMap.infowindow.open(resultsMap,this);
     // infowindow.open(resultsMap, this);
     // resultsMap.setCenter(this.position);
- });
+  });
   {% endfor %}
 
 }
@@ -164,8 +171,8 @@ function addSpots(resultsMap){
 // function searchSpots(lat, lng, 4500){
 //
 // }
-    </script>
-    <script async defer
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfOs1dFoBHGmWzp93za9hYSLEWy7YUoDE&callback=initMap">
-    </script>
+</script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfOs1dFoBHGmWzp93za9hYSLEWy7YUoDE&callback=initMap">
+</script>
 {% endblock %}
