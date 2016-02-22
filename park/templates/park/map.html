@@ -14,23 +14,36 @@
 
 </style>
 <div class="row">
-  <div class="col-md-3">
-    <h4 id="address_name" class="page-header" style="padding-left: 2%; margin-top: 7px;">
-      Spots <label class="badge">{{spot_count}}</label>
-    </h4>
+  <div class="col-md-3" >
+    <h5 id="address_name" class="page-header" style="padding-left: 2%; margin-top: 7px;">
+      <div class="dropdown">
+        Spots within
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          5 Miles
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#">.1 Miles</a></li>
+          <li><a href="#">.5 Mile</a></li>
+          <li><a href="#">1 Mile</a></li>
+          <li><a href="#">10 Miles</a></li>
+          <li><a href="#">20 Miles</a></li>
+        </ul>
+      </div>
+    </h5>
   </div>
   <div class="col-md-9">
     <form name="searchForm" action="/park" method="GET" role="search" style="padding-left: 10px;padding-right: 10px;">
       <div class="form-group">
         <div class="input-group">
-      <input id="searchBox" name="search" type="text" class="form-control input-lg" placeholder="Search an address for spots near by">
-      <input type="text" style="display: none;" />
-      <span class="input-group-btn">
-        <button id="searchButton" class="btn btn-success" type="button"><span class="glyphicon glyphicon-search" style="padding-right:5px;"></span> Search</button>
-        <input id="lat" name="lat" type="hidden">
-        <input id="lng" name="lng" type="hidden">
-      </span>
-    </div><!-- /input-group -->
+          <input id="searchBox" name="search" type="text" class="form-control input-lg" placeholder="Search an address for spots near by">
+          <input type="text" style="display: none;" />
+          <span class="input-group-btn">
+            <button id="searchButton" class="btn btn-success" type="button"><span class="glyphicon glyphicon-search" style="padding-right:5px;"></span> Search</button>
+            <input id="lat" name="lat" type="hidden">
+            <input id="lng" name="lng" type="hidden">
+          </span>
+        </div><!-- /input-group -->
       </div>
     </form>
   </div>
@@ -38,17 +51,18 @@
 <div class="col-md-3">
   <div class="list-group card" style="margin-left: 0px; width: 100%;">
     {% for spot in spots %}
-    <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
+    <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h5>{{spot.address}}</h5><p>Distance {{ spot.distance }}</p></a>
+
     {% empty %}
     <a class="list-group-item"><h5> No spots found in the given radius. </h5></a>
     {% endfor %}
   </div>
 </div>
 <div class="col-md-9">
-<div class="wrapper">
-  <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
-  <div id="map"></div>
-</div>
+  <div class="wrapper">
+    <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
+    <div id="map"></div>
+  </div>
 </div>
 <input id="address_value" type="hidden" value="{{search}}">
 <script type="text/javascript">
@@ -126,7 +140,8 @@ function addSpots(resultsMap){
   '</div>'+
   '<h4 id="firstHeading" class="page-header">{{spot.address}}</h4>'+
   '<div id="bodyContent">'+
-  '<h5>Distance: 2.5 Miles</h5>' +
+  '<h5>Distance: {{spot.distance}}</h5>' +
+
   '<h5>Price: $5.00</h5>' +
   '<h5>Seller Rating: 4.5</h5>' +
   '<h5>Spot Rating: 3.5</h5>' +
@@ -144,12 +159,15 @@ function addSpots(resultsMap){
     position: new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}})
   });
   marker.content = contentString;
-  marker.addListener('click', function() {
+  marker.addListener('mouseover', function() {
     resultsMap.infowindow.setContent(this.content);
     resultsMap.infowindow.open(resultsMap,this);
     // infowindow.open(resultsMap, this);
     // resultsMap.setCenter(this.position);
   });
+  // marker.addListener('mouseout', function() {
+  //   resultsMap.infowindow.close(resultsMap,this);
+  // });
   {% endfor %}
 
 }
@@ -158,36 +176,36 @@ function addSpots(resultsMap){
 // Set up click listener on search button.
 $( document ).ready(function() {
   $("#searchButton").click(function() {
-     submitForm();
+    submitForm();
   });
 });
 // This function delays the sending the form until it is geocoded.
 function geocodeForm(geocoder, address, callback){
-   geocoder.geocode({ 'address': address }, function (results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            // Call the callback function instead of returning
+  geocoder.geocode({ 'address': address }, function (results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      // Call the callback function instead of returning
 
-            callback(results);
-        } else {
-            callback("Could not find address");
-        }
-    });
+      callback(results);
+    } else {
+      callback("Could not find address");
+    }
+  });
 }
 
 function submitForm(){
   address = $("#searchBox").val();
   if(address){
-  geocoder = new google.maps.Geocoder();
+    geocoder = new google.maps.Geocoder();
     geocodeForm(geocoder, address, function(results) {
-        // This function gets called by the geocodeCodeForm function on success
-        $("#lat").val(results[0].geometry.location.lat());
-        $("#lng").val(results[0].geometry.location.lng());
-        document.searchForm.submit();
+      // This function gets called by the geocodeCodeForm function on success
+      $("#lat").val(results[0].geometry.location.lat());
+      $("#lng").val(results[0].geometry.location.lng());
+      document.searchForm.submit();
     });
   }
 }
 </script>
 <script async defer
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfOs1dFoBHGmWzp93za9hYSLEWy7YUoDE&callback=initMap">
+src="http://maps.google.com/maps/api/js?sensor=false&callback=initMap">
 </script>
 {% endblock %}
