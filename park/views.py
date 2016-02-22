@@ -1,12 +1,19 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import Distance, D
 from models import Spot, Vehicle
 
 # Create your views here.
 def map(request):
   if request.method == 'GET':
-    spots = Spot.objects.all()
+    if request.GET.get("lat") and request.GET.get("lng"):
+      lattitude =  float(request.GET.get("lat"))
+      longitude = float(request.GET.get("lng"))
+      search_point = Point(longitude, lattitude)
+      spots = Spot.objects.filter(location__distance_lte=(search_point, D(mi=5)))
+    else:
+      spots = []
     search = request.GET.get("search", "")
   return render(request, 'park/map.html', {"search" : search, "spots" : spots})
 

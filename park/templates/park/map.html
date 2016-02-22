@@ -20,12 +20,14 @@
     </h4>
   </div>
   <div class="col-md-9">
-    <form action="/park" method="GET" role="search" style="padding-left: 10px;padding-right: 10px;">
+    <form name="searchForm" action="/park" method="GET" role="search" style="padding-left: 10px;padding-right: 10px;">
       <div class="form-group">
         <div class="input-group">
       <input id="searchBox" name="search" type="text" class="form-control input-lg" placeholder="Search an address for spots near by">
       <span class="input-group-btn">
-        <button class="btn btn-success" type="submit" ><span class="glyphicon glyphicon-search" style="padding-right:5px;"></span> Search</button>
+        <button id="searchButton" class="btn btn-success" type="button"><span class="glyphicon glyphicon-search" style="padding-right:5px;"></span> Search</button>
+        <input id="lat" name="lat" type="hidden">
+        <input id="lng" name="lng" type="hidden">
       </span>
     </div><!-- /input-group -->
       </div>
@@ -42,18 +44,6 @@
   </div>
 </div>
 <div class="col-md-9">
-  <!-- <form class="form" action="/park/" method="POST">
-  {% csrf_token %}
-  <h4>Address</h4>
-  <input id="Address" style="width:100%;" type="text" name="address">
-  <h4>Instructions</h4>
-  <input style="width:100%;" type="text" name="instructions">
-  <input type="hidden" id="Lat" name="lat">
-  <input type="hidden" id="Lng" name="lng">
-  <br/>
-  <br/>
-  <button class="btn btn-success" type="submit">Submit</button>
-</form> -->
 <div class="wrapper">
   <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
   <div id="map"></div>
@@ -88,11 +78,11 @@ function initMap() {
     var key = e.which || e.keyCode;
     if (key === 13) { // 13 is enter
       // code for enter
-      geocodeAddress(geocoder, map);
+      submitForm();
     }
   });
-}
 
+}
 function showPosition(position) {
   gMap = new google.maps.Map(document.getElementById('map'));
   gMap.setZoom(15);      // This will trigger a zoom_changed on the map
@@ -127,10 +117,6 @@ function geocodeCustom(address){
     }
   });
 }
-$("#Address").blur(function() {
-  geocodeCustom($("#Address").val());
-  alert("Blur");
-});
 
 function addSpots(resultsMap){
   {% for spot in spots %}
@@ -168,9 +154,37 @@ function addSpots(resultsMap){
 }
 
 
-// function searchSpots(lat, lng, 4500){
-//
-// }
+// Set up click listener on search button.
+$( document ).ready(function() {
+  $("#searchButton").click(function() {
+     submitForm();
+  });
+});
+// This function delays the sending the form until it is geocoded.
+function geocodeForm(geocoder, address, callback){
+   geocoder.geocode({ 'address': address }, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            // Call the callback function instead of returning
+
+            callback(results);
+        } else {
+            callback("Could not find address");
+        }
+    });
+}
+
+function submitForm(){
+  address = $("#searchBox").val();
+  if(address){
+  geocoder = new google.maps.Geocoder();
+    geocodeForm(geocoder, address, function(results) {
+        // This function gets called by the geocodeCodeForm function on success
+        $("#lat").val(results[0].geometry.location.lat());
+        $("#lng").val(results[0].geometry.location.lng());
+        document.searchForm.submit();
+    });
+  }
+}
 </script>
 <script async defer
 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfOs1dFoBHGmWzp93za9hYSLEWy7YUoDE&callback=initMap">
