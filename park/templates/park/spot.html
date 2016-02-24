@@ -24,6 +24,11 @@
         <div class="well" >
 
           <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/park/spots/">
+            <div class="wrapper">
+              <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
+              <div id="map"></div>
+            </div>
+          </div>
             {% csrf_token %}
             <fieldset>
               <div class="control-group">
@@ -70,11 +75,6 @@
     </div>
     <div class="col-md-6">
       <br/>
-      <div class="wrapper">
-        <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
-        <div id="map"></div
-      </div>
-    </div>
     <h4 class="page-header" style="margin-top: 10px;">Your spots</h4>
     <div class="list-group card" style="margin-left: 0px; width: 100%;">
       {% for spot in spots %}
