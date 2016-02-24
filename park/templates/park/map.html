@@ -51,7 +51,7 @@
 <div class="col-md-3">
   <div class="list-group card" style="margin-left: 0px; width: 100%;">
     {% for spot in spots %}
-    <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h5>{{spot.address}}</h5><p>Distance {{ spot.distance }}</p></a>
+    <a id="{{forloop.counter}}" class="list-group-item spot" href="/" style="width:100%; margin-left: 0px;"><h5>{{spot.address}}</h5><p>Distance {{ spot.distance }}</p></a>
 
     {% empty %}
     <a class="list-group-item"><h5> No spots found in the given radius. </h5></a>
@@ -68,6 +68,7 @@
 <script type="text/javascript">
 
 var map;
+var mapMarkers = [];
 function initMap() {
   if (navigator.geolocation && !$('#address_value').val()) {
     navigator.geolocation.getCurrentPosition(showPosition);
@@ -168,7 +169,20 @@ function addSpots(resultsMap){
   // marker.addListener('mouseout', function() {
   //   resultsMap.infowindow.close(resultsMap,this);
   // });
+  mapMarkers.push(marker);
   {% endfor %}
+
+  $(".spot").mouseenter( function(){
+    var spot_id = parseInt($(this).attr("id"));
+    var marker = mapMarkers[spot_id - 1];
+    marker.setIcon("http://www2.rctcbc.gov.uk/SiteElements/ResponsiveTemplates/Images/icons/Car-Marker.png");
+  }).mouseleave( function(){
+    var spot_id = parseInt($(this).attr("id"));
+    var marker = mapMarkers[spot_id - 1];
+    marker.setIcon("https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png");
+    resultsMap.infowindow.setContent(marker.content);
+    resultsMap.infowindow.open(map, marker);
+  } );
 
 }
 
@@ -197,6 +211,7 @@ $( document ).ready(function() {
     }
     window.location.href = new_url;
   });
+
 });
 // This function delays the sending the form until it is geocoded.
 function geocodeForm(geocoder, address, callback){
