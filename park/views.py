@@ -8,19 +8,22 @@ from django.contrib.gis.db.models.functions import Distance
 # Create your views here.
 def map(request):
   if request.method == 'GET':
+    radius = request.GET.get("radius")
+    if not radius:
+      radius = 5
     if request.GET.get("lat") and request.GET.get("lng"):
       lattitude =  float(request.GET.get("lat"))
       longitude = float(request.GET.get("lng"))
       search_point = Point(longitude, lattitude)
 
       spots = Spot.objects.filter(
-      location__distance_lte=(search_point, D(mi=5))).annotate(
+      location__distance_lte=(search_point, D(mi=radius))).annotate(
       distance=Distance('location', search_point)).order_by(
       'distance')
     else:
       spots = []
     search = request.GET.get("search", "")
-  return render(request, 'park/map.html', {"search" : search, "spots" : spots})
+  return render(request, 'park/map.html', {"search" : search, "spots" : spots, "radius" : radius})
 
 def add_spot(request):
   """

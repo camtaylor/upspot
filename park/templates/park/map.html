@@ -23,11 +23,11 @@
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-          <li><a href="#">.1 Miles</a></li>
-          <li><a href="#">.5 Mile</a></li>
-          <li><a href="#">1 Mile</a></li>
-          <li><a href="#">10 Miles</a></li>
-          <li><a href="#">20 Miles</a></li>
+          <li><a class="radius">.1 Miles</a></li>
+          <li><a class="radius">.5 Miles</a></li>
+          <li><a class="radius">1 Mile</a></li>
+          <li><a class="radius">10 Miles</a></li>
+          <li><a class="radius">20 Miles</a></li>
         </ul>
       </div>
     </h5>
@@ -177,6 +177,25 @@ function addSpots(resultsMap){
 $( document ).ready(function() {
   $("#searchButton").click(function() {
     submitForm();
+  });
+
+  // On change of the radius.
+  $(".radius").click( function() {
+    var distance = $(this).text().split(" ")[0];
+    new_url = window.location.href;
+    if (new_url.indexOf("?") > -1){
+      new_url += "&radius=" + distance;
+      if (new_url.indexOf("radius") > -1){
+        new_url = new_url.split("radius")[0] + "radius=" + distance;
+      }
+      else{
+        new_url +=  "&radius=" + distance;
+      }
+    }
+    else{
+      new_url += "?" + "&radius=" + distance;
+    }
+    window.location.href = new_url;
   });
 });
 // This function delays the sending the form until it is geocoded.
