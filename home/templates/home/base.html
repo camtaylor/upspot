@@ -20,15 +20,35 @@
 a {
   outline: none !important;
 }
+#bodyContent {
+padding: 0px;
+}
+body {
+     width: 100%;
+     margin: 0%;
+}
 
+.navbar h5 {
+  color: white;
+}
 
+#navbarButton{
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  background: rgba(0,0,0,0);
+   border: 1px solid white;
+   margin-right: 10px;
+   color: white;
+   margin-top: 22px;
+   margin-left: 10px;
+}
 </style>
 
 <nav id="main-nav" class="navbar navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
       <a href="/">
-        <img class="img-responsive" src="https://s3-us-west-2.amazonaws.com/upspot/upspot-logo-white.png" style="height: 60px;"></img>
+        <img class="img-responsive" src="https://s3-us-west-2.amazonaws.com/upspot/upspot-logo-white.png" style="height: 80px;"></img>
       </a>
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
@@ -39,8 +59,9 @@ a {
     </div>
     <div class="collapse navbar-collapse" >
       <ul class="nav navbar-nav navbar-right">
-        <li><a data-toggle="modal" data-target="#contact" href="#">Sign Up</a></li>
-        <li><a data-toggle="modal" data-target="#myModal" href="#">Login</a></li>
+        <li><a data-toggle="modal" data-target="#contact" href="#"><h5>SIGN UP</h5></a></li>
+        <li><a data-toggle="modal" data-target="#myModal" href="#"><h5>LOGIN</h5></a></li>
+        <li><button id="navbarButton" class="btn btn-lg">List Your Spot</button></li>
       </ul>
       <!--TODO change hidden input -->
       <input id="address" type="hidden" value={{address}}>
@@ -48,7 +69,7 @@ a {
     </div><!-- /.navbar-collapse -->
   </div><!-- /.conaiiner-fluid -->
 </nav>
-<div class="container-fluid">
+<div id="bodyContent" class="container-fluid">
   <!-- Main page content -->
   {% block content %}
   {% endblock %}
@@ -59,7 +80,6 @@ a {
     {% include 'home/signup.html' %}
   </div>
 
-</div>
 </div>
 
 </body>

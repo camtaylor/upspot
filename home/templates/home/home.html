@@ -1,8 +1,127 @@
 {% extends 'home/base.html' %}
 {% block content %}
-<script>
+
+<style>
+  #bgvid {
+    width: 100%;
+    height: 100%;
+  }
+
+  .navbar {
+  background: rgba(0,0,0,.1);
+  border 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+   figcaption {
+    position: absolute;
+    z-index: 1000;
+    /**text, adjust as req'd**/
+    padding-top: 11%;
+    padding-left: 30%;
+    color: #FFF;
+    font-weight: 500;
+    text-align: right;
+    font-size: 20px;
+    font-size: 5.4vw;
+}
+
+#bodyContent {
+  display: none;
+}
+
+.jumbotron {
+  background-color: #FFFBFF;
+}
+#upspotMarker {
+  margin-left: 200px;
+  margin-right: 0px;
+  width: 12%;
+}
+</style>
+<script>/* play video twice as fast */
 $(document).on('shown.bs.modal', '.modal', function() {
   $(this).find('[autofocus]').focus();
 });
+</script>
+<div class="embed-responsive embed-responsive-16by9">
+<figcaption>
+<p id="tagline"> <span id="verb">Find</span> a spot<img id="upspotMarker" class="img img-responsive pull-right" src="http://www2.rctcbc.gov.uk/SiteElements/ResponsiveTemplates/Images/icons/Car-Marker.png"></img></p>
+
+</figcaption>
+<video autoplay id="bgvid">
+    <source src="https://s3-us-west-2.amazonaws.com/upspot/upspot_stock_video.mp4" type="video/mp4">
+</video>
+</div>
+<div class="jumbotron">
+  <h3 class="page-header">A marketplace for parking spots</h3>
+</br>
+<br/>
+  <div class="row">
+  <div class="col-md-8">
+  </br>
+    <img class="img img-responsive" src="https://s3-us-west-2.amazonaws.com/upspot/Screen+Shot+2016-02-23+at+11.24.52+PM.png"></img>
+  </div>
+  <div class="col-md-1"></div>
+  <div class="col-md-3">
+    <center><img class="img img-responsive" src="http://pngimg.com/upload/iphone_PNG5735.png"></img>
+    <img class="img img-responsive" src="http://www.gsmsolutions.ie/LatestNews/wp-content/uploads/2015/12/app_store_logos.png"></img>
+  </center>
+  </div>
+</row>
+</div>
+<br/>
+<h3 class="page-header">Turn your unused spot into cash.</h3>
+</div>
+
+<script>
+document.getElementById("bgvid").playbackRate = 1;
+document.getElementById("bgvid").play();
+
+var hidden = false;
+
+function myHandler() {
+
+  if(hidden == false)
+  $('#verb').fadeTo(2000, 0,  function(){
+    $("#verb").text("Rent");
+    $('#verb').fadeTo(3000, 1,  function(){
+    });
+  });
+  else{
+    $('#verb').fadeTo(2000, 0,  function(){
+      $("#verb").text("Find");
+      $("#verb").fadeTo(3000, 1,  function(){
+      });
+    });
+  }
+
+  if(hidden == false)
+  $('#upspotMarker').fadeTo(2000, 0,  function(){
+    hidden = true;
+  });
+  else{
+    $('#upspotMarker').fadeTo(3000, 1,  function(){
+      hidden = false;
+    });
+  }
+
+}
+
+var runAtTime = function(handler, time) {
+     var wrapped = function() {
+         if(this.currentTime >= time) {
+             $(this).off('timeupdate', wrapped);
+             return handler.apply(this, arguments);
+        }
+     }
+    return wrapped;
+};
+
+$(document).ready(function(){
+	$('#bodyContent').fadeIn(1000);
+});
+$('#bgvid').on('timeupdate', runAtTime(myHandler, 6));
+$('#bgvid').on('timeupdate', runAtTime(myHandler, 28));
 </script>
 {% endblock %}
