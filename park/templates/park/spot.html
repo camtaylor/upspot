@@ -17,16 +17,15 @@
 <div class="row">
   <input id="address_value" type="hidden">
   <div class="col-md-6">
-  <h4 class="page-header" style="margin-top: 5px;" >Your spots</h4>
-  <div class="list-group card" style="margin-left: 0px; width: 100%;">
-    {% for spot in spots %}
-    <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
-    {% empty %}
-    <a class="list-group-item"><h5> You have not added any spots yet. </h5></a>
-    {% endfor %}
-
+    <h4 class="page-header" style="margin-top: 5px;" >Your spots</h4>
+    <div class="list-group card" style="margin-left: 0px; width: 100%;">
+      {% for spot in spots %}
+      <a class="list-group-item" href="/" style="width:100%; margin-left: 0px;"><h4>{{spot.address}}</h4></a>
+      {% empty %}
+      <a class="list-group-item"><h5> You have not added any spots yet. </h5></a>
+      {% endfor %}
+    </div>
   </div>
-</div>
   <div class="col-md-6">
     <div class="panel panel-primary">
       <h4 class="panel-heading">Add a spot</h4>
@@ -35,10 +34,9 @@
 
           <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/park/spots/">
             <div class="wrapper">
-              <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
-              <div id="map"></div>
+              <!-- <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif"> -->
+              <div id="map" style="display: none;"></div>
             </div>
-          </div>
             {% csrf_token %}
             <fieldset>
               <div class="control-group">
@@ -57,23 +55,23 @@
                 <h5>Instructions </h5>
                 <div class="controls">
                   <input class="form-control input-lg" type="text" placeholder="Example: Please pull as far right as possible in driveway." required>
-              </div>
-              <br/>
-              <div class="control-group">
-                <div class="controls">
-                  <label for="termsCheckbox" style="padding-left: 5px;">
-                    <input id="termsCheckbox" type="checkbox" required>
-                    I understand and agree to the <a href="/terms">terms and conditions.</a>
-                  </label>
-              </div>
-              </div>
-              <br/>
-              <input type="hidden" id="Lat" name="lat">
-              <input type="hidden" id="Lng" name="lng">
-              <div class="control-group">
-                <!-- Button -->
-                <div class="controls">
-                  <button class="btn btn-success btn-lg" type="submit" style="display: block; width: 100%;"> Add Spot</button>
+                </div>
+                <br/>
+                <div class="control-group">
+                  <div class="controls">
+                    <label for="termsCheckbox" style="padding-left: 5px;">
+                      <input id="termsCheckbox" type="checkbox" required>
+                      I understand and agree to the <a href="/terms">terms and conditions.</a>
+                    </label>
+                  </div>
+                </div>
+                <br/>
+                <input type="hidden" id="Lat" name="lat">
+                <input type="hidden" id="Lng" name="lng">
+                <div class="control-group">
+                  <!-- Button -->
+                  <div class="controls">
+                    <button class="btn btn-success btn-lg" type="submit" style="display: block; width: 100%;"> Add Spot</button>
                   </div>
                 </div>
               </fieldset>
@@ -82,6 +80,7 @@
         </div>
       </div>
     </div>
+  </div>
 
   <script type="text/javascript">
 
@@ -89,13 +88,12 @@
   function initMap() {
     if (navigator.geolocation && !$('#address_value').val()) {
       navigator.geolocation.getCurrentPosition(showPosition);
-      $("#loading").show();
     }
     else if (!$('#address_value').val()){
       alert("Geolocation is not supported by this browser.");
     }
     var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 15,
+      zoom: 22,
       center: {lat: 37.7749295, lng: -122.4194155}
     });
     map.infowindow = new google.maps.InfoWindow();
@@ -103,7 +101,6 @@
     if($('#address_value').val()){
       $('#Address').val($('#address_value').val());
       geocodeAddress(geocoder, map);
-      $("#loading").hide();
     }
 
 
@@ -117,10 +114,9 @@
   }
 
   function showPosition(position) {
-    gMap = new google.maps.Map(document.getElementById('map'));
-    gMap.setZoom(15);      // This will trigger a zoom_changed on the map
-    gMap.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
-    $("#loading").hide();
+    map = new google.maps.Map(document.getElementById('map'));
+    map.setZoom(15);      // This will trigger a zoom_changed on the map
+    map.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
   }
 
   function geocodeAddress(geocoder, resultsMap) {
@@ -132,6 +128,8 @@
         resultsMap.setCenter(results[0].geometry.location);
         var marker = new google.maps.Marker({
           map: resultsMap,
+          zoom: 20,
+          mapTypeId: google.maps.MapTypeId.SATELLITE,
           position: results[0].geometry.location
         });
         // addSpots(resultsMap);
@@ -147,6 +145,14 @@
       if (status === google.maps.GeocoderStatus.OK) {
         $("#Lat").val(results[0].geometry.location.lat());
         $("#Lng").val(results[0].geometry.location.lng());
+        map.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+          map: map,
+          position: results[0].geometry.location,
+          draggable: true
+        });
+        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+        map.setZoom(26);
       } else {
         alert('Geocode was not successful for the following reason: ' + status);
       }
@@ -154,6 +160,8 @@
   }
   $("#termsCheckbox").click(function() {
     geocodeCustom($("#Address").val());
+    $("#map").show();
+    google.maps.event.trigger(map, 'resize');
     alert("Blur");
   });
 
@@ -206,8 +214,8 @@
   // }
   </script>
 
-<script async defer
-src="http://maps.google.com/maps/api/js?sensor=false&callback=initMap">
-</script>
+  <script async defer
+  src="http://maps.google.com/maps/api/js?sensor=false&callback=initMap">
+  </script>
 
   {% endblock %}

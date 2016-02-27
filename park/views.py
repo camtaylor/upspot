@@ -30,7 +30,7 @@ def add_spot(request):
     View to add a new spot to upspot.
   """
   if request.method == 'GET':
-    spots = Spot.objects.all()
+    spots = Spot.objects.filter(owner=request.user)
     return render(request, 'park/spot.html', {'spots' : spots})
   elif request.method =='POST':
     owner = request.user
