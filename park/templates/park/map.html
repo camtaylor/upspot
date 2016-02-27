@@ -103,6 +103,7 @@ function showPosition(position) {
   gMap = new google.maps.Map(document.getElementById('map'));
   gMap.setZoom(15);      // This will trigger a zoom_changed on the map
   gMap.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+  reverseGeocode(position.coords.latitude, position.coords.longitude);
   $("#loading").hide();
 }
 
@@ -130,6 +131,22 @@ function geocodeCustom(address){
       $("#Lng").val(results[0].geometry.location.lng());
     } else {
       alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+
+function reverseGeocode(latitude, longitude){
+  var geocoder = new google.maps.Geocoder();
+  var latlng = {lat: latitude, lng: longitude}
+  geocoder.geocode({'location': latlng}, function(results, status) {
+    if (status === google.maps.GeocoderStatus.OK) {
+      if (results[1]) {
+        $("#searchBox").val(results[1].formatted_address);
+        submitForm();
+      } else {
+      }
+    } else {
+      return "";
     }
   });
 }

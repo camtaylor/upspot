@@ -33,10 +33,12 @@ def add_spot(request):
     spots = Spot.objects.all()
     return render(request, 'park/spot.html', {'spots' : spots})
   elif request.method =='POST':
+    owner = request.user
     lattitude = float(request.POST.get("lat"))
     longitude = float(request.POST.get("lng"))
     address = request.POST.get("address")
     new_spot = Spot()
+    new_spot.owner = owner
     new_spot.location = Point(longitude, lattitude)
     new_spot.address = address
     new_spot.save()
@@ -50,9 +52,11 @@ def add_vehicle(request):
     vehicles = Vehicle.objects.all()
     return render(request, 'park/vehicle.html', {'vehicles' : vehicles})
   elif request.method =='POST':
+    owner = request.user
     make = request.POST.get("make")
     model = request.POST.get("model")
     new_vehicle = Vehicle()
+    new_vehicle.owner = owner
     new_vehicle.make = make
     new_vehicle.model = model
     new_vehicle.save()
