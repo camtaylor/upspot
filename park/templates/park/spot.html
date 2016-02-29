@@ -71,7 +71,7 @@
                 <div class="control-group">
                   <!-- Button -->
                   <div class="controls">
-                    <button class="btn btn-success btn-lg" type="submit" style="display: block; width: 100%;"> Add Spot</button>
+                    <button id="submitButton" class="btn btn-success btn-lg" type="" style="display: block; width: 100%;"> Add Spot</button>
                   </div>
                 </div>
               </fieldset>
@@ -85,6 +85,9 @@
   <script type="text/javascript">
 
   var map;
+  var currentAddress;
+  var spotMarker;
+
   function initMap() {
     if (navigator.geolocation && !$('#address_value').val()) {
       navigator.geolocation.getCurrentPosition(showPosition);
@@ -146,10 +149,18 @@
         $("#Lat").val(results[0].geometry.location.lat());
         $("#Lng").val(results[0].geometry.location.lng());
         map.setCenter(results[0].geometry.location);
-        var marker = new google.maps.Marker({
+        if(spotMarker){
+          spotMarker.setMap(null);
+        }
+        spotMarker = new google.maps.Marker({
           map: map,
           position: results[0].geometry.location,
+          icon: "https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png",
           draggable: true
+        });
+        google.maps.event.addListener(spotMarker, 'dragend', function(){
+          $("#Lat").val(spotMarker.getPosition().lat());
+          $("#Lng").val(spotMarker.getPosition().lng());
         });
         map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
         map.setZoom(26);
@@ -158,12 +169,24 @@
       }
     });
   }
-  $("#termsCheckbox").click(function() {
+  $("#Address").blur(function() {
+    if ($("#Address").val() && currentAddress != $("#Address").val()){
+    currentAddress = $("#Address").val();
     geocodeCustom($("#Address").val());
     $("#map").show();
     google.maps.event.trigger(map, 'resize');
-    alert("Blur");
+    }
   });
+
+  $("#submitButton").click(function() {
+    if ($("#Address").val() && currentAddress != $("#Address").val()){
+    currentAddress = $("#Address").val();
+    geocodeCustom($("#Address").val());
+    $("#map").show();
+    google.maps.event.trigger(map, 'resize');
+    }
+  });
+
 
   function addSpots(resultsMap){
     {% for spot in spots %}

@@ -13,7 +13,7 @@
           <img class="img img-responsive" src="https://s3-us-west-2.amazonaws.com/upspot/upspot-logo-black.png" style="width:75%;">
         </center>
         <div class="well" >
-         <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="login/">
+         <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/login">
           {% csrf_token %}
            <fieldset>
              <small class="label label-danger pull-right">{{error}}</small>

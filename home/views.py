@@ -14,7 +14,12 @@ def user_signup(request):
     user_password = request.POST.get("password", None)
     if user_email and user_password:
       new_user = User.objects.create_user(username=user_email, email=user_email, password=user_password)
-  return redirect('/')
+      user = authenticate(username=user_email, password=user_password)
+      if user:
+        login(request,user)
+        return redirect('/park')
+      else:
+        return redirect('/')
 
 def user_login(request):
   logout(request)
