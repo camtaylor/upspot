@@ -66,4 +66,9 @@ def reserve_spot(request):
   """
     View to handle booking a spot.
   """
-  return redirect('/')
+  if request.method == 'GET':
+    return render(request, 'park/reserve.html', {})
+  elif request.method == 'POST':
+    return render(request, 'park/reserve.html', {})
+  else:
+    return redirect('/')
