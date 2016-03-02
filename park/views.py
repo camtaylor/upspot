@@ -67,7 +67,12 @@ def reserve_spot(request):
     View to handle booking a spot.
   """
   if request.method == 'GET':
-    return render(request, 'park/reserve.html', {})
+    spot_id = request.GET.get("id")
+    if spot_id:
+      spot = Spot.objects.get(pk=spot_id)
+    else:
+      spot = None
+    return render(request, 'park/reserve.html', {'spot' : spot})
   elif request.method == 'POST':
     return render(request, 'park/reserve.html', {})
   else:

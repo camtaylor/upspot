@@ -19,13 +19,14 @@
       <div class="dropdown">
         Spots within
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-          5 Miles
+          {{radius}} {% if radius != "1" %} Miles {% else %} Mile {% endif %}
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
           <li><a class="radius">.1 Miles</a></li>
           <li><a class="radius">.5 Miles</a></li>
           <li><a class="radius">1 Mile</a></li>
+          <li><a class="radius">5 Miles</a></li>
           <li><a class="radius">10 Miles</a></li>
           <li><a class="radius">20 Miles</a></li>
         </ul>
@@ -51,7 +52,7 @@
 <div class="col-md-3">
   <div class="list-group card" style="margin-left: 0px; width: 100%;">
     {% for spot in spots %}
-    <a id="{{forloop.counter}}" class="list-group-item spot" href="/" style="width:100%; margin-left: 0px;"><h5>{{spot.address}}</h5><p>Distance {{ spot.distance }}</p></a>
+    <a id="{{forloop.counter}}" class="list-group-item spot" href="reserve?id={{spot.id}}" style="width:100%; margin-left: 0px;"><h5>{{spot.address}}</h5><p>Distance {{ spot.distance }}</p></a>
 
     {% empty %}
     <a class="list-group-item"><h5> No spots found in the given radius. </h5></a>
@@ -61,7 +62,7 @@
 <div class="col-md-9">
   <div class="wrapper">
     <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
-    <div id="map"></div>
+    <div class="card" id="map"></div>
   </div>
 </div>
 <input id="address_value" type="hidden" value="{{search}}">
@@ -69,7 +70,33 @@
 
 var map;
 var mapMarkers = [];
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+  }
+}
+
+var radius = parseFloat(getUrlParameter('radius'));
+var zoom = 17;
+if (!radius) {
+  radius = 5;
+}
+if (radius >= 1) {
+  //Change zoom on change of radius of search.
+  zoom = 16 - Math.floor(Math.sqrt(radius) * 1.3);
+}
+
 function initMap() {
+  //Called on page load to render map.
   if (navigator.geolocation && !$('#address_value').val()) {
     navigator.geolocation.getCurrentPosition(showPosition);
     $("#loading").show();
@@ -77,8 +104,8 @@ function initMap() {
   else if (!$('#address_value').val()){
     alert("Geolocation is not supported by this browser.");
   }
-  var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 15,
+  map = new google.maps.Map(document.getElementById('map'), {
+    zoom: zoom,
     center: {lat: 37.7749295, lng: -122.4194155}
   });
   map.infowindow = new google.maps.InfoWindow();
@@ -101,7 +128,7 @@ function initMap() {
 }
 function showPosition(position) {
   gMap = new google.maps.Map(document.getElementById('map'));
-  gMap.setZoom(15);      // This will trigger a zoom_changed on the map
+  gMap.setZoom(zoom);      // This will trigger a zoom_changed on the map
   gMap.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
   reverseGeocode(position.coords.latitude, position.coords.longitude);
   $("#loading").hide();
@@ -136,6 +163,7 @@ function geocodeCustom(address){
 }
 
 function reverseGeocode(latitude, longitude){
+  //Function to generate an aprox address from lat, lng.
   var geocoder = new google.maps.Geocoder();
   var latlng = {lat: latitude, lng: longitude}
   geocoder.geocode({'location': latlng}, function(results, status) {
@@ -164,7 +192,8 @@ function addSpots(resultsMap){
   '<h5>Seller Rating: 4.5</h5>' +
   '<h5>Spot Rating: 3.5</h5>' +
   '<h5>Available Until: 7:30 PM</h5>' +
-  '<br/><a class="btn btn-lg btn-success" href="reserve" style="width: 100%;"> Reserve Spot</a>' +
+  '<br/><a class="btn btn-lg btn-success" href="reserve?id={{spot.id}}"' +
+  ' style="width: 100%;"> Reserve Spot</a>' +
   '</div>'+
   '</div>';
 
@@ -193,12 +222,15 @@ function addSpots(resultsMap){
     var spot_id = parseInt($(this).attr("id"));
     var marker = mapMarkers[spot_id - 1];
     marker.setIcon("http://www2.rctcbc.gov.uk/SiteElements/ResponsiveTemplates/Images/icons/Car-Marker.png");
+    map.panTo(marker.position);
+    // resultsMap.infowindow.setContent(marker.content);
+    // resultsMap.infowindow.open(map, marker);
   }).mouseleave( function(){
     var spot_id = parseInt($(this).attr("id"));
     var marker = mapMarkers[spot_id - 1];
     marker.setIcon("https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png");
-    resultsMap.infowindow.setContent(marker.content);
-    resultsMap.infowindow.open(map, marker);
+    // resultsMap.infowindow.setContent(marker.content);
+    // resultsMap.infowindow.open(map, marker);
   } );
 
 }

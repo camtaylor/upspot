@@ -1,13 +1,25 @@
 {% extends 'park/base.html' %}
 {% block content %}
+
+<style>
+.page-header {
+  margin-top: 10px;
+  padding-left: 10px;
+}
+
+.card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+</style>
 <div class="row">
+<h3 class="page-header">{{spot.address}}</h3>
 <div class="col-md-6">
-  <h4 class="page-header">Map View</h4>
-  <div id="map" style="width: 80%; height: 30%;"></div>
+  <h5 class="page-header">Map View</h5>
+  <div id="map" class="card" style="width: 100%; height: 40%;"></div>
 </div>
 <div class="col-md-6">
-  <h4 class="page-header">Street View</h4>
-  <div id="pano" style="width: 80%; height: 30%;"></div>
+  <h5 class="page-header">Street View</h5>
+  <div id="pano" class="card" style="width: 100%; height: 40%;"></div>
 </div>
 </div>
 <script>
@@ -17,9 +29,10 @@
 
       var map;
       var panorama;
+      var mapMarkers = [];
 
       function initMap() {
-        var berkeley = {lat: 37.869085, lng: -122.254775};
+        var berkeley = new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}});
         var sv = new google.maps.StreetViewService();
 
         panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
@@ -27,12 +40,13 @@
         // Set up the map.
         map = new google.maps.Map(document.getElementById('map'), {
           center: berkeley,
-          zoom: 16,
+          zoom: 20,
+          mapTypeId: google.maps.MapTypeId.SATELLITE,
           streetViewControl: false
         });
 
         // Set the initial Street View camera to the center of the map
-        sv.getPanorama({location: berkeley, radius: 50}, processSVData);
+        sv.getPanorama({location: berkeley, radius:50}, processSVData);
 
         // Look for a nearby Street View panorama when the map is clicked.
         // getPanoramaByLocation will return the nearest pano when the
@@ -40,6 +54,9 @@
         map.addListener('click', function(event) {
           sv.getPanorama({location: event.latLng, radius: 50}, processSVData);
         });
+
+        addSpots(map);
+        addSpots(panorama);
       }
 
       function processSVData(data, status) {
@@ -51,11 +68,15 @@
           });
 
           panorama.setPano(data.location.pano);
+          var heading = google.maps.geometry.spherical.computeHeading(data.location.latLng,mapMarkers[0].getPosition());
           panorama.setPov({
-            heading: 270,
+            heading: heading,
             pitch: 0
           });
           panorama.setVisible(true);
+
+
+
 
           marker.addListener('click', function() {
             var markerPanoID = data.location.pano;
@@ -70,6 +91,45 @@
         } else {
           console.error('Street View data not found for this location.');
         }
+      }
+
+      function addSpots(resultsMap){
+        var contentString = '<div id="content">'+
+        '<div id="siteNotice">'+
+        '</div>'+
+        '<h4 id="firstHeading" class="page-header">{{spot.address}}</h4>'+
+        '<div id="bodyContent">'+
+        '<h5>Distance: {{spot.distance}}</h5>' +
+
+        '<h5>Price: $5.00</h5>' +
+        '<h5>Seller Rating: 4.5</h5>' +
+        '<h5>Spot Rating: 3.5</h5>' +
+        '<h5>Available Until: 7:30 PM</h5>' +
+        '<br/><a class="btn btn-lg btn-success" href="reserve?id={{spot.id}}"' +
+        ' style="width: 100%;"> Reserve Spot</a>' +
+        '</div>'+
+        '</div>';
+
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+        var marker = new google.maps.Marker({
+          map: resultsMap,
+          icon: "https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png",
+          position: new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}})
+        });
+        marker.content = contentString;
+        marker.addListener('mouseover', function() {
+          resultsMap.infowindow.setContent(this.content);
+          resultsMap.infowindow.open(resultsMap,this);
+          // infowindow.open(resultsMap, this);
+          // resultsMap.setCenter(this.position);
+        });
+        // marker.addListener('mouseout', function() {
+        //   resultsMap.infowindow.close(resultsMap,this);
+        // });
+        mapMarkers.push(marker);
+
       }
     </script>
     <script async defer
