@@ -173,8 +173,10 @@
     if ($("#Address").val() && currentAddress != $("#Address").val()){
     currentAddress = $("#Address").val();
     geocodeCustom($("#Address").val());
-    $("#map").show();
-    google.maps.event.trigger(map, 'resize');
+    $("#map").show("slow", function() {
+      google.maps.event.trigger(map, 'resize');
+    });
+
     }
   });
 
