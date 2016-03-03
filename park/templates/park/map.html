@@ -131,6 +131,9 @@ function initMap() {
   // Create the autocomplete helper, and associate it with
   // an HTML text input box.
   var autocomplete = new google.maps.places.Autocomplete(input);
+  google.maps.event.addListener(autocomplete, 'place_changed', function() {
+    submitForm();
+  });
 
 }
 function showPosition(position) {
