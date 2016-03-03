@@ -82,4 +82,3 @@ def manage_reservations(request):
   """
      View to check in and check out of spots
   """
-  
