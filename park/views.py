@@ -77,3 +77,9 @@ def reserve_spot(request):
     return render(request, 'park/reserve.html', {})
   else:
     return redirect('/')
+
+def manage_reservations(request):
+  """
+     View to check in and check out of spots
+  """
+  
