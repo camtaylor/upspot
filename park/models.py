@@ -8,6 +8,7 @@ class Spot(models.Model):
   owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
   address = models.CharField(max_length=100)
   available = models.BooleanField(default=False)
+  in_use = models.BooleanField(default=False)
   location = models.PointField()
   rating = models.IntegerField(default=0)
   num_ratings = models.IntegerField(default=0)

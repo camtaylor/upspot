@@ -1,14 +1,20 @@
 from django.contrib.auth.models import User, Group
-from park.models import Spot
+from park.models import Spot, Reservation
 from rest_framework import serializers
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:
     model = User
-    fields = ('username', 'email', 'rating')
+    fields = ('username', 'email')
 
 class SpotSerializer(serializers.ModelSerializer):
+  owner = UserSerializer()
   class Meta:
     model = Spot
     fields = ('owner', 'address', 'location', 'available')
+
+class ReservationSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Reservation
+    fields = ()
