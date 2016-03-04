@@ -15,6 +15,9 @@ class SpotSerializer(serializers.ModelSerializer):
     fields = ('owner', 'address', 'location', 'available')
 
 class ReservationSerializer(serializers.ModelSerializer):
+  spot = SpotSerializer()
+  buyer = UserSerializer()
+  seller = UserSerializer()
   class Meta:
     model = Reservation
-    fields = ()
+    fields = ('spot', 'price', 'buyer', 'seller', 'start', 'end' )

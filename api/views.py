@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User, Group
-from park.models import Spot
+from park.models import Spot, Reservation
 from rest_framework import viewsets
-from serializers import UserSerializer, SpotSerializer
+from serializers import UserSerializer, SpotSerializer, ReservationSerializer
 from rest_framework.decorators import detail_route
 from rest_framework import generics
 from django.contrib.gis.db.models.functions import Distance
@@ -46,3 +46,10 @@ class SpotViewSet(viewsets.ModelViewSet):
     else:
       queryset = []
     return queryset
+
+class ReservationViewSet(viewsets.ModelViewSet):
+  """
+  API endpoint that allows reservations to be viewed
+  """
+  serializer_class = ReservationSerializer
+  queryset = Reservation.objects.all()
