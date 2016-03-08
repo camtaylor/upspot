@@ -5,8 +5,11 @@ from django.contrib.gis.measure import  D
 from models import Spot, Vehicle
 from django.contrib.gis.db.models.functions import Distance
 
-# Create your views here.
+
 def map(request):
+  """
+    View to handle spot map and search.
+  """
   if request.method == 'GET':
     radius = request.GET.get("radius")
     if not radius:
@@ -15,7 +18,7 @@ def map(request):
       lattitude =  float(request.GET.get("lat"))
       longitude = float(request.GET.get("lng"))
       search_point = Point(longitude, lattitude)
-
+      #Get all spots within radius from search point.
       spots = Spot.objects.filter(
       location__distance_lte=(search_point, D(mi=radius))).annotate(
       distance=Distance('location', search_point)).order_by(
@@ -49,7 +52,7 @@ def add_vehicle(request):
     View to add a new vehicle to upspot.
   """
   if request.method == 'GET':
-    vehicles = Vehicle.objects.all()
+    vehicles = Vehicle.objects.filter(owner=request.user)
     return render(request, 'park/vehicle.html', {'vehicles' : vehicles})
   elif request.method =='POST':
     owner = request.user
