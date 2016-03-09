@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import  D
-from models import Spot, Vehicle
+from models import Spot, Vehicle, GeoBucket
 from django.contrib.gis.db.models.functions import Distance
+from scripts import geohash_encode, geohash_decode
 
 
 def map(request):
@@ -18,6 +19,12 @@ def map(request):
       lattitude =  float(request.GET.get("lat"))
       longitude = float(request.GET.get("lng"))
       search_point = Point(longitude, lattitude)
+      # Find geohash to get grid value and retrieve geobucket.
+      spot_geohash = geohash_encode(lattitude, longitude)[:6]
+      geobucket, created = GeoBucket.objects.get_or_create(geohash=spot_geohash)
+      # Add a search to the given geobucket and save.
+      geobucket.search()
+      geobucket.save()
       #Get all spots within radius from search point.
       spots = Spot.objects.filter(
       location__distance_lte=(search_point, D(mi=radius))).annotate(

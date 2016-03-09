@@ -35,3 +35,11 @@ class BuyerProfile(models.Model):
   rating = models.IntegerField(default=0)
   num_ratings = models.IntegerField(default=0)
   num_reservations = models.IntegerField(default=0)
+
+class GeoBucket(models.Model):
+  geohash = models.CharField(max_length=50)
+  spots = models.IntegerField(default=0)
+  searches = models.IntegerField(default=0)
+
+  def search(self):
+    self.searches += 1
