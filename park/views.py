@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import  D
-from models import Spot, Vehicle, GeoBucket
+from models import Spot, Vehicle, GeoBucket, Reservation
 from django.contrib.gis.db.models.functions import Distance
 from scripts import geohash_encode, geohash_decode
-
+from datetime import datetime
 
 def map(request):
   """
@@ -76,19 +76,43 @@ def reserve_spot(request):
   """
     View to handle booking a spot.
   """
+  # GET request will show a given spot.
   if request.method == 'GET':
     spot_id = request.GET.get("id")
     if spot_id:
       spot = Spot.objects.get(pk=spot_id)
     else:
       spot = None
-    return render(request, 'park/reserve.html', {'spot' : spot})
+    return render(request, 'park/reserve.html', {'spot' : spot, 'id' : spot_id})
+  # POST request will reserve a given spot.
   elif request.method == 'POST':
-    return render(request, 'park/reserve.html', {})
+    spot_id = request.POST.get("id")
+    # Check if spot exists.
+    if spot_id:
+      spot = Spot.objects.get(pk=spot_id)
+      if spot.available:
+        # If the spot is available make a reservation.
+        reservation = Reservation(
+        buyer=request.user,
+        seller=spot.owner,
+        spot=spot,
+        # Dummy price, needs to be set dynamically by GeoBucket
+        price=500,
+        # Dummy start, set to now needs to be set to user defined start time.
+        start=datetime.now()
+        )
+        reservation.save()
+        # Set spot to unavailable
+        spot.available = False
+        spot.in_use = True
+        spot.save()
+
+
+    return redirect('/park')
   else:
     return redirect('/')
 
 def manage_reservations(request):
   """
-     View to check in and check out of spots
+    View to check in and check out of spots
   """

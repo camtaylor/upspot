@@ -12,6 +12,11 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
+#spotList {
+  height: 80%;
+  overflow-y: scroll;
+}
+
 </style>
 <div class="row">
   <div class="col-md-2" >
@@ -50,7 +55,7 @@
   </div>
 </div>
 <div class="col-md-2">
-  <div class="list-group card" style="margin-left: 0px; width: 100%;">
+  <div id="spotList" class="list-group card" style="margin-left: 0px; width: 100%;">
     {% for spot in spots %}
     <a id="{{forloop.counter}}" class="list-group-item spot" href="reserve?id={{spot.id}}" style="width:100%; margin-left: 0px;"><h5>{{spot.address}}</h5><p>Distance {{ spot.distance }}</p></a>
 
@@ -203,7 +208,7 @@ function addSpots(resultsMap){
   '<h5>Spot Rating: 3.5</h5>' +
   '<h5>Available Until: 7:30 PM</h5>' +
   '<br/><a class="btn btn-lg btn-success" href="reserve?id={{spot.id}}"' +
-  ' style="width: 100%;"> Reserve Spot</a>' +
+  ' style="width: 100%;"> View Spot</a>' +
   '</div>'+
   '</div>';
 

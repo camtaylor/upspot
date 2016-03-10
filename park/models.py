@@ -26,7 +26,7 @@ class Reservation(models.Model):
   buyer = models.ForeignKey(User, related_name="buyer_user")
   seller = models.ForeignKey(User, related_name="seller_user")
   start = models.DateTimeField(blank=True)
-  end = models.DateTimeField(blank=True)
+  end = models.DateTimeField(blank=True, null=True)
 
 class BuyerProfile(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
