@@ -12,7 +12,14 @@
 }
 </style>
 <div class="row">
-<h4 class="page-header" style="margin-left: 10px;">{{spot.address}}<a style="margin-right: 20px;" class="btn btn-success pull-right" data-toggle="modal" data-target="#reserveModal">Reserve Spot</a></h4>
+<h4 class="page-header" style="margin-left: 10px;">{{spot.address}}<a style="margin-right: 20px;" class="btn btn-success pull-right"
+  data-toggle="modal"
+  {% if user.is_authenticated %}
+  data-target="#reserveModal"
+  {% else %}
+  data-target="#myModal"
+  {% endif %}
+  >Reserve Spot</a></h4>
 <div class="col-md-6">
   <h5 class="page-header">Map View</h5>
   <div id="map" class="card" style="width: 100%; height: 40%;"></div>
@@ -22,6 +29,7 @@
   <div id="pano" class="card" style="width: 100%; height: 40%;"></div>
 </div>
 </div>
+
 
 {% include 'park/reserve_modal.html' %}
 <script>

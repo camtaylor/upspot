@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 
 # Create your views here.
 def home(request):
+  user = request.user
+  if user and user.is_active:
+    return redirect('/park')
   return render(request, 'home/home.html', {})
 
 def user_signup(request):

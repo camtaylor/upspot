@@ -52,6 +52,12 @@ def add_spot(request):
     new_spot.location = Point(longitude, lattitude)
     new_spot.address = address
     new_spot.save()
+    # Find geohash to get grid value and retrieve geobucket.
+    spot_geohash = geohash_encode(lattitude, longitude)[:6]
+    geobucket, created = GeoBucket.objects.get_or_create(geohash=spot_geohash)
+    # Add a spot to the given geobucket and save.
+    geobucket.spot()
+    geobucket.save()
     return redirect('/park/spots')
 
 def add_vehicle(request):
@@ -107,8 +113,7 @@ def reserve_spot(request):
         spot.in_use = True
         spot.save()
 
-
-    return redirect('/park')
+    return redirect('/park/reservations')
   else:
     return redirect('/')
 
@@ -116,3 +121,9 @@ def manage_reservations(request):
   """
     View to check in and check out of spots
   """
+  user = request.user
+  reservations = []
+  if user and user.is_active:
+    reservations = Reservation.objects.filter(buyer=user)
+  return render(request, 'park/manage_reservations.html',
+  {'reservations' : reservations})

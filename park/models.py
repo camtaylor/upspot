@@ -43,3 +43,5 @@ class GeoBucket(models.Model):
 
   def search(self):
     self.searches += 1
+  def spot(self):
+    self.spots += 1
