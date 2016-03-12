@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class Spot(models.Model):
   owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
   address = models.CharField(max_length=100)
-  available = models.BooleanField(default=False)
+  available = models.BooleanField(default=True)
   in_use = models.BooleanField(default=False)
   location = models.PointField()
   rating = models.IntegerField(default=0)
@@ -21,7 +21,7 @@ class Vehicle(models.Model):
   license_plate = models.CharField(max_length=20, default="XXXXXXX")
 
 class Reservation(models.Model):
-  spot = models.ForeignKey(Spot)
+  spot = models.ForeignKey(Spot, on_delete=models.CASCADE)
   price = models.IntegerField()
   buyer = models.ForeignKey(User, related_name="buyer_user")
   seller = models.ForeignKey(User, related_name="seller_user")

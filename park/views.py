@@ -27,6 +27,7 @@ def map(request):
       geobucket.save()
       #Get all spots within radius from search point.
       spots = Spot.objects.filter(
+      available=True,
       location__distance_lte=(search_point, D(mi=radius))).annotate(
       distance=Distance('location', search_point)).order_by(
       'distance')
