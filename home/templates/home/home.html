@@ -80,10 +80,12 @@ $(document).on('shown.bs.modal', '.modal', function() {
   </figcaption>
   <div id="searchBar">
     <center>
-      <form id="searchForm">
+      <form name="searchForm" action="/park" method="GET">
         <div class="input-append">
           <input id="addressInput" class="input control" type="text" placeholder="Where do you want to park?">
-          <button class="btn btn-primary btn-lg" type="button"><span class="glyphicon glyphicon-search"></span></button>
+          <input id="lat" type="hidden" name="lat">
+          <input id="lng" type="hidden" name="lng">
+          <button id="searchButton" class="btn btn-primary btn-lg" type="button"><span class="glyphicon glyphicon-search"></span></button>
         </div>
       </form>
     </center>
@@ -178,6 +180,10 @@ $(document).on('shown.bs.modal', '.modal', function() {
 
   $(document).ready(function(){
     $('#bodyContent').fadeIn(1000);
+
+    $("#searchButton").click(function() {
+      submitForm();
+    });
     // Add autocomplete to search box
     var input = document.getElementById("addressInput");
     // var searchBox = new google.maps.places.SearchBox(input);
@@ -190,6 +196,32 @@ $(document).on('shown.bs.modal', '.modal', function() {
   });
   $('#bgvid').on('timeupdate', runAtTime(myHandler, 6));
   $('#bgvid').on('timeupdate', runAtTime(myHandler, 28));
+
+  // This function delays the sending the form until it is geocoded.
+  function geocodeForm(geocoder, address, callback){
+    geocoder.geocode({ 'address': address }, function (results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        // Call the callback function instead of returning
+
+        callback(results);
+      } else {
+        callback("Could not find address");
+      }
+    });
+  }
+
+  function submitForm(){
+    address = $("#addressInput").val();
+    if(address){
+      geocoder = new google.maps.Geocoder();
+      geocodeForm(geocoder, address, function(results) {
+        // This function gets called by the geocodeCodeForm function on success
+        $("#lat").val(results[0].geometry.location.lat());
+        $("#lng").val(results[0].geometry.location.lng());
+        document.searchForm.submit();
+      });
+    }
+  }
 
 
   </script>
