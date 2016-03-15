@@ -28,13 +28,13 @@ body {
 
 </div>
 <div class="row">
-<div class="col-md-6">
+<div class="col-md-7">
   <h5 class="page-header">Street View</h5>
   <div id="pano" class="card" style="width: 100%; height: 40%;"></div>
 </div>
-<div class="col-md-6">
+<div class="col-md-5">
   <h5 class="page-header">Reservation</h5>
-  <div id="pano" class="card" style="width: 100%; height: 40%;">
+  <div style="width: 100%; height: 40%;">
     <div class="panel panel-primary">
     <div class="panel-body">
       <h4 class="page-header" style="margin-left: 10px;">
@@ -46,15 +46,15 @@ body {
       <h5>Spot Type/ Spot Number</h5>
       <h5>Availability Chart</h5>
       <h5>Distance</h5>
-      <a style="width: 50%;" class="btn btn-success pull-right"
-        data-toggle="modal"
-        {% if user.is_authenticated %}
-        data-target="#reserveModal"
-        {% else %}
-        data-target="#myModal"
-        {% endif %}
-        >Reserve Spot</a>
     </div>
+    <a style="width: 100%;" class="btn btn-success btn-lg"
+      data-toggle="modal"
+      {% if user.is_authenticated %}
+      data-target="#reserveModal"
+      {% else %}
+      data-target="#myModal"
+      {% endif %}
+      >Reserve Spot</a>
     </div>
   </div>
 </div>
@@ -83,7 +83,7 @@ body {
         map = new google.maps.Map(document.getElementById('map'), {
           center: berkeley,
           zoom: 20,
-          mapTypeId: google.maps.MapTypeId.SATELLITE,
+          mapTypeId: google.maps.MapTypeId.HYBRID,
           streetViewControl: false
         });
 
@@ -157,7 +157,7 @@ body {
         });
         var marker = new google.maps.Marker({
           map: resultsMap,
-          icon: "https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png",
+          icon: "https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerSmall.png",
           position: new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}})
         });
         marker.content = contentString;

@@ -217,7 +217,7 @@ function addSpots(resultsMap){
   });
   var marker = new google.maps.Marker({
     map: resultsMap,
-    icon: "https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png",
+    icon: "https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerSmall.png",
     position: new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}})
   });
   marker.content = contentString;
@@ -236,14 +236,14 @@ function addSpots(resultsMap){
   $(".spot").mouseenter( function(){
     var spot_id = parseInt($(this).attr("id"));
     var marker = mapMarkers[spot_id - 1];
-    marker.setIcon("http://www2.rctcbc.gov.uk/SiteElements/ResponsiveTemplates/Images/icons/Car-Marker.png");
+    marker.setIcon("https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerGreen.png");
     map.panTo(marker.position);
     // resultsMap.infowindow.setContent(marker.content);
     // resultsMap.infowindow.open(map, marker);
   }).mouseleave( function(){
     var spot_id = parseInt($(this).attr("id"));
     var marker = mapMarkers[spot_id - 1];
-    marker.setIcon("https://s3-us-west-2.amazonaws.com/upspot/icon_parking_info.png");
+    marker.setIcon("https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerSmall.png");
     // resultsMap.infowindow.setContent(marker.content);
     // resultsMap.infowindow.open(map, marker);
   } );
