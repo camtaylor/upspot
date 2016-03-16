@@ -38,13 +38,12 @@ body {
     <div class="panel panel-primary">
     <div class="panel-body">
       <h4 class="page-header" style="margin-left: 10px;">
-        {{spot.address}}
+        {{spot.shorthand_address}}
         <p class="pull-right">Rating: {{spot.rating}}</p>
       </h4>
       <h5>Price</h5>
       <h5>Owner</h5>
       <h5>Spot Type/ Spot Number</h5>
-      <h5>Availability Chart</h5>
       <h5>Distance</h5>
     </div>
     <a style="width: 100%;" class="btn btn-success btn-lg"
@@ -77,13 +76,18 @@ body {
         var berkeley = new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}});
         var sv = new google.maps.StreetViewService();
 
-        panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
+        panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'),
+         {
+           scrollwheel: false,
+         }
+        );
 
         // Set up the map.
         map = new google.maps.Map(document.getElementById('map'), {
           center: berkeley,
           zoom: 20,
           mapTypeId: google.maps.MapTypeId.HYBRID,
+          scrollwheel: false,
           streetViewControl: false
         });
 
@@ -106,7 +110,7 @@ body {
           var marker = new google.maps.Marker({
             position: data.location.latLng,
             map: map,
-            title: data.location.description
+            title: data.location.description,
           });
 
           panorama.setPano(data.location.pano);

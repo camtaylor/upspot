@@ -57,7 +57,13 @@
 <div class="col-md-2">
   <div id="spotList" class="list-group card" style="margin-left: 0px; width: 100%;">
     {% for spot in spots %}
-    <a id="{{forloop.counter}}" class="list-group-item spot" href="reserve?id={{spot.id}}" style="width:100%; margin-left: 0px;"><h5>{{spot.address}}</h5><p>Distance {{ spot.distance }}</p></a>
+    <a id="{{forloop.counter}}" class="list-group-item spot" href="reserve?id={{spot.id}}" style="width:100%; margin-left: 0px;">
+      <h5><span class="label label-primary pull-right">$5</span></h5>
+      <h5>{{spot.shorthand_address}}
+      </h5>
+      <p>Distance {{ spot.distance }}</p>
+      <p>Estimated Walking Time: {{spot.walking_time}} minutes</p>
+    </a>
 
     {% empty %}
     <a class="list-group-item"><h5> No spots found in the given radius. </h5></a>
@@ -199,7 +205,7 @@ function addSpots(resultsMap){
   var contentString = '<div id="content">'+
   '<div id="siteNotice">'+
   '</div>'+
-  '<h4 id="firstHeading" class="page-header">{{spot.address}}</h4>'+
+  '<h5 id="firstHeading" class="page-header">{{spot.shorthand_address}}</h5>'+
   '<div id="bodyContent">'+
   '<h5>Distance: {{spot.distance}}</h5>' +
 
@@ -221,15 +227,20 @@ function addSpots(resultsMap){
     position: new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}})
   });
   marker.content = contentString;
+  marker.addListener('click', function() {
+    window.location.href = "reserve?id={{spot.id}}";
+  });
   marker.addListener('mouseover', function() {
     resultsMap.infowindow.setContent(this.content);
     resultsMap.infowindow.open(resultsMap,this);
+    this.setIcon("https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerGreen.png");
     // infowindow.open(resultsMap, this);
     // resultsMap.setCenter(this.position);
   });
-  // marker.addListener('mouseout', function() {
-  //   resultsMap.infowindow.close(resultsMap,this);
-  // });
+  marker.addListener('mouseout', function() {
+    // resultsMap.infowindow.close(resultsMap,this);
+    this.setIcon("https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerSmall.png");
+  });
   mapMarkers.push(marker);
   {% endfor %}
 
