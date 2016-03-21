@@ -100,19 +100,25 @@ def reserve_spot(request):
       if spot.available:
         # If the spot is available make a reservation.
         reservation = Reservation(
-        buyer=request.user,
-        seller=spot.owner,
-        spot=spot,
-        # Dummy price, needs to be set dynamically by GeoBucket
-        price=500,
-        # Dummy start, set to now needs to be set to user defined start time.
-        start=datetime.now()
+          buyer=request.user,
+          seller=spot.owner,
+          spot=spot,
+          # Dummy price, needs to be set dynamically by GeoBucket
+          price=500,
+          # Dummy start, set to now needs to be set to user defined start time.
+          start=datetime.now()
         )
         reservation.save()
         # Set spot to unavailable
         spot.available = False
         spot.in_use = True
         spot.save()
+        # Find geohash to get grid value and retrieve geobucket.
+        spot_geohash = geohash_encode(spot.lat(), spot.lng())[:6]
+        geobucket, created = GeoBucket.objects.get_or_create(geohash=spot_geohash)
+        # Add a search to the given geobucket and save.
+        geobucket.reservation()
+        geobucket.save()
 
     return redirect('/park/reservations')
   else:
@@ -126,5 +132,15 @@ def manage_reservations(request):
   reservations = []
   if user and user.is_active:
     reservations = Reservation.objects.filter(buyer=user)
-  return render(request, 'park/manage_reservations.html',
-  {'reservations' : reservations})
+  if request.method == "GET":
+    return render(request, 'park/manage_reservations.html',
+    {'reservations' : reservations})
+  elif request.method == "POST":
+    reservation_id = request.POST.get('reservationId')
+    if reservation_id:
+      reservation = Reservation.objects.get(pk=reservation_id)
+      print reservation.buyer == user
+      if reservation and reservation.buyer == user:
+        reservation.checkout()
+        reservation.save()
+    return redirect('/park/reservations')

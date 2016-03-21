@@ -58,7 +58,7 @@
   <div id="spotList" class="list-group card" style="margin-left: 0px; width: 100%;">
     {% for spot in spots %}
     <a id="{{forloop.counter}}" class="list-group-item spot" href="reserve?id={{spot.id}}" style="width:100%; margin-left: 0px;">
-      <h5><span class="label label-primary pull-right">$5</span></h5>
+      <h5><span class="label label-primary pull-right">${{spot.get_price}}</span></h5>
       <h5>{{spot.shorthand_address}}
       </h5>
       <p>Distance {{ spot.distance }}</p>
