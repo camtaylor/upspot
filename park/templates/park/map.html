@@ -1,22 +1,33 @@
 {% extends "park/base.html" %}
 {% block content %}
 <style type="text/css">
+
 #map { height: 82%; }
+
 #wrapper { position: relative; }
+
 #loading {
   position: absolute; z-index: 99; opacity: .5;left:0;
   right:0;
   margin:20 auto;
 }
+
 .card {
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 #spotList {
-  height: 80%;
+  height: 82%;
   overflow-y: scroll;
+  background-color: #ececec;
 }
 
+.sidebar {
+  padding-left: 0px;
+  margin-left: 0px;
+  padding-right: 0px;
+  margin-right: 0px;
+}
 </style>
 <div class="row">
   <div class="col-md-2" >
@@ -54,8 +65,9 @@
     </form>
   </div>
 </div>
-<div class="col-md-2">
+<div class="col-md-2 sidebar">
   <div id="spotList" class="list-group card" style="margin-left: 0px; width: 100%;">
+    <button class="card btn">Button</button>
     {% for spot in spots %}
     <a id="{{forloop.counter}}" class="list-group-item spot" href="reserve?id={{spot.id}}" style="width:100%; margin-left: 0px;">
       <h5><span class="label label-primary pull-right">${{spot.get_price}}</span></h5>
@@ -70,7 +82,7 @@
     {% endfor %}
   </div>
 </div>
-<div class="col-md-10">
+<div class="col-md-10 sidebar">
   <div class="wrapper">
     <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
     <div class="card" id="map"></div>
@@ -98,9 +110,6 @@ var getUrlParameter = function getUrlParameter(sParam) {
 
 var radius = parseFloat(getUrlParameter('radius'));
 var zoom = 17;
-if (!radius) {
-  radius = 5;
-}
 if (radius >= 1) {
   //Change zoom on change of radius of search.
   zoom = 16 - Math.floor(Math.sqrt(radius) * 1.3);
@@ -205,17 +214,18 @@ function addSpots(resultsMap){
   var contentString = '<div id="content">'+
   '<div id="siteNotice">'+
   '</div>'+
+  '<br/>' +
+  '<img class="img img-responsive card" ' +
+  //TODO calculate the correct heading
+  'src="http://maps.googleapis.com/maps/api/streetview?size=300x150&location={{spot.lat}},{{spot.lng}}&fov=90&heading=90&pitch=10"' +
+  '></img>' +
   '<h5 id="firstHeading" class="page-header">{{spot.shorthand_address}}</h5>'+
   '<div id="bodyContent">'+
   '<h5>Distance: {{spot.distance}}</h5>' +
-
   '<h5>Price: $5.00</h5>' +
-  '<h5>Seller Rating: 4.5</h5>' +
-  '<h5>Spot Rating: 3.5</h5>' +
-  '<h5>Available Until: 7:30 PM</h5>' +
-  '<br/><a class="btn btn-lg btn-success" href="reserve?id={{spot.id}}"' +
-  ' style="width: 100%;"> View Spot</a>' +
-  '</div>'+
+  // '<br/><a class="btn btn-lg btn-success" href="reserve?id={{spot.id}}"' +
+  // ' style="width: 100%;"> View Spot</a>' +
+  // '</div>'+
   '</div>';
 
   var infowindow = new google.maps.InfoWindow({
