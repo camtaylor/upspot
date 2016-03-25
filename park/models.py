@@ -26,6 +26,13 @@ class Spot(models.Model):
     """
     return self.address.split(",")[0]
 
+  def to_miles(self):
+    """
+    Returns distance in miles
+    1 meter = 0.00062137 miles
+    """
+    return (self.distance.m * 0.00062137)
+
   def walking_time(self):
     """
       Returns an estimated walking time in minutes from a distance.

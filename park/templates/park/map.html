@@ -2,7 +2,7 @@
 {% block content %}
 <style type="text/css">
 
-#map { height: 86%;}
+#map { height: 80%;}
 .row {
     padding-top: 0px;
     margin-top: -20px;
@@ -60,8 +60,8 @@
       <h5><span class="label label-primary pull-right">${{spot.get_price}}</span></h5>
       <h5>{{spot.shorthand_address}}
       </h5>
-      <p>Distance {{ spot.distance }}</p>
-      <p>Estimated Walking Time: {{spot.walking_time}} minutes</p>
+      <p><i class="material-icons" style="color:blue; opacity:0.5;">location_on</i>Distance  {{ spot.to_miles|floatformat:2 }} miles</p>
+      <p><i class="material-icons" style="color:blue; opacity:0.5;">directions_walk</i>Walking:  {{spot.walking_time}} minutes</p>
     </a>
 
     {% empty %}
@@ -225,7 +225,7 @@ function addSpots(resultsMap){
   '></img>' +
   '<h5 id="firstHeading" class="page-header">{{spot.shorthand_address}}</h5>'+
   '<div id="bodyContent">'+
-  '<h5>Distance: {{spot.distance}}</h5>' +
+  '<h5>Distance: {{spot.to_miles|floatformat:2}} miles</h5>' +
   '<h5>Price: $5.00</h5>' +
   // '<br/><a class="btn btn-lg btn-success" href="reserve?id={{spot.id}}"' +
   // ' style="width: 100%;"> View Spot</a>' +
