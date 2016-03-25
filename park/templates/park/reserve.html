@@ -97,9 +97,9 @@ body {
         // Look for a nearby Street View panorama when the map is clicked.
         // getPanoramaByLocation will return the nearest pano when the
         // given radius is 50 meters or less.
-        map.addListener('click', function(event) {
-          sv.getPanorama({location: event.latLng, radius: 50}, processSVData);
-        });
+        // map.addListener('click', function(event) {
+        //   sv.getPanorama({location: event.latLng, radius: 50}, processSVData);
+        // });
 
         addSpots(map);
         addSpots(panorama);

@@ -2,7 +2,9 @@ from __future__ import unicode_literals
 
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
-
+import datetime
+from django.utils import timezone
+from scripts import geohash_encode, geohash_decode
 # Create your models here.
 class Spot(models.Model):
   owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -28,6 +30,23 @@ class Spot(models.Model):
     """
     return int(self.distance.m // 83)
 
+  def lat(self):
+    """
+      Returns the lattitude of the spot location
+    """
+    return self.location.y
+
+  def lng(self):
+    """
+      Returns the longitude of the spot location.
+    """
+    return self.location.x
+
+  #TODO Remove from spot as method and add an instance variable of geobucket
+  def get_price(self):
+    geo_bucket = GeoBucket.objects.get(geohash=geohash_encode(self.lat(), self.lng())[:6])
+    return geo_bucket.price // 100
+
 class Vehicle(models.Model):
   owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
   make = models.CharField(max_length=50)
@@ -41,6 +60,26 @@ class Reservation(models.Model):
   seller = models.ForeignKey(User, related_name="seller_user")
   start = models.DateTimeField(blank=True)
   end = models.DateTimeField(blank=True, null=True)
+
+  def checkout(self):
+    """
+      Function to complete and checkout of the reservation.
+    """
+    self.end = datetime.datetime.now()
+    #TODO add buffer time
+    #Release spot back onto market.
+    self.spot.available = True
+    self.spot.in_use = False
+    self.spot.save()
+
+  def closed(self):
+    """
+      Determines if reservation is closed
+    """
+    if self.end == None:
+      return False
+    else:
+      return self.end <= timezone.now()
 
 class BuyerProfile(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -80,9 +119,21 @@ class GeoBucket(models.Model):
 
   def spot(self):
     self.spots += 1
+<<<<<<< HEAD
 
   def calc_price(self):
     fixed_price = 5
     ratio = self.searches / float(self.spots)
     surge = (self.reservations * ratio) / 100 + 1
     return fixed_price * surge
+=======
+  def reservation(self):
+    self.reservations += 1
+    self.update_price()
+  def update_price(self):
+    """
+      Function to update price of a given territory.
+    """
+    # Calculate searches / spots * reservertions
+    self.price = 500 + (500 * self.reservations/self.spots)
+>>>>>>> 10e5d10ebfe8ce84144e7c735d3e6093f7144edb
