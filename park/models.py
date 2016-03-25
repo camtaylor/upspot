@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 import datetime
@@ -100,14 +99,6 @@ class SellerProfile(models.Model):
 
 
 class GeoBucket(models.Model):
-  ''' Spot availability hours assumptions
-    1.  Get user location
-        as location -> spot, price increases
-        Use case: Booking from home vs booking from outside
-
-    2.  Surge multiplier is a constant multiplied to the price
-        Surge based on spots available/existing
-  '''
   geohash = models.CharField(max_length=50)
   spots = models.IntegerField(default=0)
   reservations = models.IntegerField(default=0)
@@ -119,21 +110,28 @@ class GeoBucket(models.Model):
 
   def spot(self):
     self.spots += 1
-<<<<<<< HEAD
 
-  def calc_price(self):
-    fixed_price = 5
-    ratio = self.searches / float(self.spots)
-    surge = (self.reservations * ratio) / 100 + 1
-    return fixed_price * surge
-=======
   def reservation(self):
     self.reservations += 1
     self.update_price()
+
   def update_price(self):
-    """
-      Function to update price of a given territory.
-    """
-    # Calculate searches / spots * reservertions
-    self.price = 500 + (500 * self.reservations/self.spots)
->>>>>>> 10e5d10ebfe8ce84144e7c735d3e6093f7144edb
+    ''' Spot availability hours assumptions
+      1.  Get user location
+        as location -> spot, price increases
+        Use case: Booking from home vs booking from outside
+
+      2.  Surge multiplier is a constant multiplied to the price
+        Surge based on spots available/existing
+    '''
+    fixed_price = 5
+    ratio = self.searches / float(self.spots)
+    surge = (self.reservations * ratio) / 100 + 1
+    return (fixed_price * surge) * 100
+  
+  # def update_price(self):
+  #   """
+  #     Function to update price of a given territory.
+  #   """
+  #   # Calculate searches / spots * reservertions
+  #   self.price = 500 + (500 * self.reservations/self.spots)
