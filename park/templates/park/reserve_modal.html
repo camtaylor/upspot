@@ -17,7 +17,20 @@
           {% csrf_token %}
            <fieldset>
              <div class="control-group">
-               <h4>Vehicle</h4>
+               <h4>Vehicle
+                 <div class="dropdown pull-right">
+                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                         Select a vehicle
+                         <span class="caret"></span>
+                     </button>
+                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                         {% for vehicle in user.vehicle_set.all %}
+                         <li><a href="#">{{ vehicle.make }} {{  vehicle.model }}</a></li>
+                         {% endfor  %}
+                     </ul>
+                 </div>
+               </h4>
                <h4>Start Time</h4>
                <div class="controls">
                  <input name="id" type="hidden" value={{id}}>
@@ -25,7 +38,7 @@
              </div>
              <div class="control-group">
              </div>
-             <br></br>
+             <br/>
              <div class="control-group">
                <!-- Button -->
                <div class="controls">

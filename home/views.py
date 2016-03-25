@@ -4,20 +4,21 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-# Create your views here.
+
 def home(request):
-  '''
+  """
   Landing page / default of web address
-  '''
+  """
   user = request.user
   if user and user.is_active:
     return redirect('/park')
   return render(request, 'home/home.html', {})
 
+
 def user_signup(request):
-  '''
+  """
   Signs user up via email and password
-  '''
+  """
   if request.POST:
     user_email = request.POST.get("email", None)
     user_password = request.POST.get("password", None)
@@ -30,12 +31,13 @@ def user_signup(request):
       else:
         return redirect('/')
 
+
 def user_login(request):
-  '''
+  """
   Ensures no previous user logged in. Logs in user by following credentials
   param1: username as email address
   param2: password 
-  '''
+  """
   logout(request)
   username = password = ''
   if request.POST:
@@ -50,9 +52,10 @@ def user_login(request):
   else:
     return render(request, 'home/login_static.html', {})
 
+
 def user_logout(request):
-  '''
+  """
   End user session
-  '''
+  """
   logout(request)
   return redirect("/")

@@ -2,8 +2,11 @@
 {% block content %}
 <style type="text/css">
 
-#map { height: 82%; }
-
+#map { height: 86%;}
+.row {
+    padding-top: 0px;
+    margin-top: -20px;
+}
 #wrapper { position: relative; }
 
 #loading {
@@ -15,9 +18,12 @@
 .card {
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
-
+.row {
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
 #spotList {
-  height: 82%;
+  height: 92%;
   overflow-y: scroll;
   background-color: #ececec;
 }
@@ -30,8 +36,9 @@
 }
 </style>
 <div class="row">
-  <div class="col-md-2" >
-    <h5 id="address_name" class="page-header" style="padding-left: 2%; margin-top: 7px;">
+  <div class="col-md-2 sidebar">
+  <div id="spotList" class="list-group card" style="margin-left: 0px; width: 100%;">
+    <h6 id="address_name" class="page-header" style="padding-left: 2%; margin-top: 7px;">
       <div class="dropdown">
         Spots within
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -47,27 +54,7 @@
           <li><a class="radius">20 Miles</a></li>
         </ul>
       </div>
-    </h5>
-  </div>
-  <div class="col-md-10">
-    <form name="searchForm" action="/park" method="GET" role="search" style="padding-left: 10px;padding-right: 10px;">
-      <div class="form-group">
-        <div class="input-group">
-          <input id="searchBox" name="search" type="text" class="form-control input-lg control" placeholder="Search an address for spots near by">
-          <input type="text" style="display: none;" />
-          <span class="input-group-btn">
-            <button id="searchButton" class="btn btn-success" type="button"><span class="glyphicon glyphicon-search" style="padding-right:5px;"></span> Search</button>
-            <input id="lat" name="lat" type="hidden">
-            <input id="lng" name="lng" type="hidden">
-          </span>
-        </div><!-- /input-group -->
-      </div>
-    </form>
-  </div>
-</div>
-<div class="col-md-2 sidebar">
-  <div id="spotList" class="list-group card" style="margin-left: 0px; width: 100%;">
-    <button class="card btn">Button</button>
+    </h6>
     {% for spot in spots %}
     <a id="{{forloop.counter}}" class="list-group-item spot" href="reserve?id={{spot.id}}" style="width:100%; margin-left: 0px;">
       <h5><span class="label label-primary pull-right">${{spot.get_price}}</span></h5>
@@ -82,11 +69,28 @@
     {% endfor %}
   </div>
 </div>
-<div class="col-md-10 sidebar">
-  <div class="wrapper">
+  <div class="col-md-10">
+    <form name="searchForm" action="/park" method="GET" role="search" style="padding-left: 10px;padding-right: 10px;">
+      <div class="form-group">
+        <div class="input-group">
+          <input id="searchBox" name="search" type="text" class="form-control input-lg control" placeholder="Search an address for spots near by">
+          <input type="text" style="display: none;" />
+          <span class="input-group-btn">
+            <button id="searchButton" class="btn btn-success" type="button"><span class="glyphicon glyphicon-search" style="padding-right:5px;"></span> Search</button>
+            <input id="lat" name="lat" type="hidden">
+            <input id="lng" name="lng" type="hidden">
+          </span>
+        </div><!-- /input-group -->
+      </div>
+    </form>
+      <div class="wrapper">
     <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif">
     <div class="card" id="map"></div>
   </div>
+  </div>
+</div>
+
+<div class="col-md-10 sidebar">
 </div>
 <input id="address_value" type="hidden" value="{{search}}">
 <script type="text/javascript">
@@ -259,14 +263,13 @@ function addSpots(resultsMap){
     var marker = mapMarkers[spot_id - 1];
     marker.setIcon("https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerGreen.png");
     map.panTo(marker.position);
-    // resultsMap.infowindow.setContent(marker.content);
-    // resultsMap.infowindow.open(map, marker);
+    resultsMap.infowindow.setContent(marker.content);
+    resultsMap.infowindow.open(map, marker);
   }).mouseleave( function(){
     var spot_id = parseInt($(this).attr("id"));
     var marker = mapMarkers[spot_id - 1];
     marker.setIcon("https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerSmall.png");
-    // resultsMap.infowindow.setContent(marker.content);
-    // resultsMap.infowindow.open(map, marker);
+    resultsMap.infowindow.close(map, marker);
   } );
 
 }

@@ -4,8 +4,12 @@ from django.contrib.auth.models import User
 import datetime
 from django.utils import timezone
 from scripts import geohash_encode, geohash_decode
-# Create your models here.
+
+
 class Spot(models.Model):
+  """
+    A spot represents the parking spot for sale.
+  """
   owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
   address = models.CharField(max_length=100)
   available = models.BooleanField(default=True)
@@ -31,7 +35,7 @@ class Spot(models.Model):
 
   def lat(self):
     """
-      Returns the lattitude of the spot location
+      Returns the latitude of the spot location
     """
     return self.location.y
 
@@ -43,16 +47,28 @@ class Spot(models.Model):
 
   #TODO Remove from spot as method and add an instance variable of geobucket
   def get_price(self):
+    """
+      Price is not stored in the spot but fetched from the geobucket which has dynamic pricing.
+    """
     geo_bucket = GeoBucket.objects.get(geohash=geohash_encode(self.lat(), self.lng())[:6])
     return geo_bucket.price // 100
 
+
 class Vehicle(models.Model):
+  """
+    Vehicles are parked in spots. A user may have multiple vehicles.
+  """
   owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
   make = models.CharField(max_length=50)
   model = models.CharField(max_length=50)
   license_plate = models.CharField(max_length=20, default="XXXXXXX")
 
+
 class Reservation(models.Model):
+  """
+    A reservation is created when a user books a spot.
+    Holds info about a certain transaction.
+  """
   spot = models.ForeignKey(Spot, on_delete=models.CASCADE)
   price = models.IntegerField()
   buyer = models.ForeignKey(User, related_name="buyer_user")
@@ -65,8 +81,8 @@ class Reservation(models.Model):
       Function to complete and checkout of the reservation.
     """
     self.end = datetime.datetime.now()
-    #TODO add buffer time
-    #Release spot back onto market.
+    # TODO add buffer time
+    # Release spot back onto market.
     self.spot.available = True
     self.spot.in_use = False
     self.spot.save()
@@ -81,6 +97,10 @@ class Reservation(models.Model):
       return self.end <= timezone.now()
 
 class BuyerProfile(models.Model):
+  """
+    Because a user may be a buyer and seller of spots we separate profiles into buyer/seller.
+    Buyer profile holds info about a user's buying history. Buyers rent spots.
+  """
   user = models.ForeignKey(User, on_delete=models.CASCADE)
   name = models.CharField(max_length=35)
   phone_number = models.CharField(max_length=20)
@@ -89,6 +109,10 @@ class BuyerProfile(models.Model):
   num_reservations = models.IntegerField(default=0)
 
 class SellerProfile(models.Model):
+  """
+    Because a user may be a buyer and seller of spots we separate profiles into buyer/seller.
+    Seller profile holds info about a user's history of renting out their spots to others.
+  """
   user = models.ForeignKey(User, on_delete=models.CASCADE)
   name = models.CharField(max_length=35)
   phone_number = models.CharField(max_length=20)
@@ -99,6 +123,10 @@ class SellerProfile(models.Model):
 
 
 class GeoBucket(models.Model):
+  """
+    The GeoBucket model maps to a normal grid system. It allows us to track supply and demand in a given
+    square of a grid. This is the model where the price of any given spot is determined.
+  """
   geohash = models.CharField(max_length=50)
   spots = models.IntegerField(default=0)
   reservations = models.IntegerField(default=0)

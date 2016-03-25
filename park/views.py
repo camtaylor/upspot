@@ -42,6 +42,7 @@ def map(request):
 
   return render(request, 'park/map.html', context)
 
+
 def add_spot(request):
   """
     View to add a new spot to upspot.
@@ -67,6 +68,7 @@ def add_spot(request):
     geobucket.save()
     return redirect('/park/spots')
 
+
 def add_vehicle(request):
   """
     View to add a new vehicle to upspot.
@@ -84,6 +86,7 @@ def add_vehicle(request):
     new_vehicle.model = model
     new_vehicle.save()
     return redirect('/park/vehicles')
+
 
 def reserve_spot(request):
   """
@@ -131,6 +134,7 @@ def reserve_spot(request):
   else:
     return redirect('/')
 
+
 def manage_reservations(request):
   """
     View to check in and check out of spots
@@ -139,9 +143,6 @@ def manage_reservations(request):
   reservations = []
   if user and user.is_active:
     reservations = Reservation.objects.filter(buyer=user)
-  return render(request, 'park/manage_reservations.html',
-    {'reservations' : reservations})
-
   if request.method == "GET":
     return render(request, 'park/manage_reservations.html',
     {'reservations' : reservations})
