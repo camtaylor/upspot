@@ -16,7 +16,7 @@ def map(request):
     if not radius:
       radius = 5
     if request.GET.get("lat") and request.GET.get("lng"):
-      lattitude =  float(request.GET.get("lat"))
+      lattitude = float(request.GET.get("lat"))
       longitude = float(request.GET.get("lng"))
       search_point = Point(longitude, lattitude)
       # Find geohash to get grid value and retrieve geobucket.
@@ -27,14 +27,20 @@ def map(request):
       geobucket.save()
       #Get all spots within radius from search point.
       spots = Spot.objects.filter(
-      available=True,
-      location__distance_lte=(search_point, D(mi=radius))).annotate(
-      distance=Distance('location', search_point)).order_by(
-      'distance')
+        available = True,
+        location__distance_lte = (search_point, D(mi=radius))
+        ).annotate(distance = Distance('location', search_point)
+        ).order_by('distance')
     else:
       spots = []
     search = request.GET.get("search", "")
-  return render(request, 'park/map.html', {"search" : search, "spots" : spots, "radius" : radius})
+    context = {
+      "search" : search,
+      "spots" : spots,
+      "radius" : radius,
+    }
+
+  return render(request, 'park/map.html', context)
 
 def add_spot(request):
   """
@@ -55,7 +61,7 @@ def add_spot(request):
     new_spot.save()
     # Find geohash to get grid value and retrieve geobucket.
     spot_geohash = geohash_encode(lattitude, longitude)[:6]
-    geobucket, created = GeoBucket.objects.get_or_create(geohash=spot_geohash)
+    geobucket, _ = GeoBucket.objects.get_or_create(geohash=spot_geohash)
     # Add a spot to the given geobucket and save.
     geobucket.spot()
     geobucket.save()
@@ -92,6 +98,7 @@ def reserve_spot(request):
       spot = None
     return render(request, 'park/reserve.html', {'spot' : spot, 'id' : spot_id})
   # POST request will reserve a given spot.
+  
   elif request.method == 'POST':
     spot_id = request.POST.get("id")
     # Check if spot exists.
@@ -100,21 +107,21 @@ def reserve_spot(request):
       if spot.available:
         # If the spot is available make a reservation.
         reservation = Reservation(
-        buyer=request.user,
-        seller=spot.owner,
-        spot=spot,
-        # Dummy price, needs to be set dynamically by GeoBucket
-        price=500,
-        # Dummy start, set to now needs to be set to user defined start time.
-        start=datetime.now()
+          buyer=request.user,
+          seller=spot.owner,
+          spot=spot,
+          # Dummy price, needs to be set dynamically by GeoBucket
+          price=500,
+          # Dummy start, set to now needs to be set to user defined start time.
+          start=datetime.now()
         )
         reservation.save()
         # Set spot to unavailable
         spot.available = False
         spot.in_use = True
         spot.save()
-
     return redirect('/park/reservations')
+
   else:
     return redirect('/')
 
@@ -127,4 +134,4 @@ def manage_reservations(request):
   if user and user.is_active:
     reservations = Reservation.objects.filter(buyer=user)
   return render(request, 'park/manage_reservations.html',
-  {'reservations' : reservations})
+    {'reservations' : reservations})

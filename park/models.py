@@ -61,12 +61,28 @@ class SellerProfile(models.Model):
 
 
 class GeoBucket(models.Model):
+  ''' Spot availability hours assumptions
+    1.  Get user location
+        as location -> spot, price increases
+        Use case: Booking from home vs booking from outside
+
+    2.  Surge multiplier is a constant multiplied to the price
+        Surge based on spots available/existing
+  '''
   geohash = models.CharField(max_length=50)
   spots = models.IntegerField(default=0)
   reservations = models.IntegerField(default=0)
   searches = models.IntegerField(default=0)
   price = models.IntegerField(default=500)
+  
   def search(self):
     self.searches += 1
+
   def spot(self):
     self.spots += 1
+
+  def calc_price(self):
+    fixed_price = 5
+    ratio = self.searches / float(self.spots)
+    surge = (self.reservations * ratio) / 100 + 1
+    return fixed_price * surge
