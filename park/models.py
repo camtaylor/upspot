@@ -18,6 +18,8 @@ class Spot(models.Model):
   rating = models.IntegerField(default=0)
   num_ratings = models.IntegerField(default=0)
   num_reservations = models.IntegerField(default=0)
+  instructions = models.CharField(max_length=255)
+  spot_number = models.CharField(default="", max_length=10)
 
   def shorthand_address(self):
     """

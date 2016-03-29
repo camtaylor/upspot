@@ -11,7 +11,7 @@
   border-bottom: 1px solid #000000;
 }
 
-#map { height: 40%; }
+#map, #street_map { height: 40%; }
 #wrapper { position: relative;}
 </style>
 <div class="row">
@@ -37,8 +37,12 @@
 
           <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/park/spots/">
             <div class="wrapper">
-              <!-- <img id="loading" class="img-responsive" src="https://themarketingoak.files.wordpress.com/2015/07/circle-loading-animation.gif"> -->
               <div id="map" style="display: none;"></div>
+            </div>
+
+            <!-- Street View Map -->
+            <div class="wrapper">
+              <div id="street_map" style="display:none;"></div>
             </div>
             {% csrf_token %}
             <fieldset>
@@ -48,16 +52,18 @@
                   <input  id="Address" type="text" name="address" placeholder="" class="form-control input-lg" required>
                 </div>
               </div>
+
+
               <div class="control-group">
                 <h5>Spot Number </h5>
                 <div class="controls">
-                  <input class="form-control input-lg" type="number" placeholder="Leave blank for no spot number" >
+                  <input class="form-control input-lg" type="text" placeholder="Leave blank for no spot number" name="spot_number">
                 </div>
               </div>
               <div class="control-group">
                 <h5>Instructions </h5>
                 <div class="controls">
-                  <input class="form-control input-lg" type="text" placeholder="Example: Please pull as far right as possible in driveway." required>
+                  <input class="form-control input-lg" type="text" placeholder="Example: Please pull as far right as possible in driveway." name="instructions" required>
                 </div>
                 <br/>
                 <div class="control-group">
@@ -84,7 +90,7 @@
       </div>
     </div>
   </div>
-
+  
   <script type="text/javascript">
 
   var map;
@@ -127,7 +133,6 @@
     google.maps.event.addListener(autocomplete, 'place_changed', function() {
       updateSpot();
     });
-
   }
 
   function showPosition(position) {
@@ -183,6 +188,7 @@
       }
     });
   }
+
   $("#Address").blur(function() {
     if ($("#Address").val() && currentAddress != $("#Address").val()){
     currentAddress = $("#Address").val();
@@ -201,7 +207,6 @@
     $("#map").show("slow", function() {
       google.maps.event.trigger(map, 'resize');
     });
-
     }
   }
 

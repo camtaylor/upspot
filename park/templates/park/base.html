@@ -1,6 +1,5 @@
 <html>
 <head>
-
   <meta name="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
@@ -11,8 +10,10 @@
   <!---Date Picker imports !-->
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-
-
+  <!-- Static files -->
+  {% load staticfiles %}
+  <script src="{% static "park/mapFunctions.js" %}"></script>
+  
 </head>
 <body>
 

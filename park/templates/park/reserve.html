@@ -1,5 +1,8 @@
 {% extends 'park/base.html' %}
 {% block content %}
+{% load staticfiles %}
+<script src="{% static "park/reserveMap.js" %}"></script>
+
 
 <style>
 body {
@@ -61,124 +64,16 @@ body {
 <br/>
 </div>
 
-
-{% include 'park/reserve_modal.html' %}
-<script>
-      /*
-       * Click the map to set a new location for the Street View camera.
-       */
-
-      var map;
-      var panorama;
-      var mapMarkers = [];
-
-      function initMap() {
-        var berkeley = new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}});
-        var sv = new google.maps.StreetViewService();
-
-        panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'),
-         {
-           scrollwheel: false,
-         }
-        );
-
-        // Set up the map.
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: berkeley,
-          zoom: 20,
-          mapTypeId: google.maps.MapTypeId.HYBRID,
-          scrollwheel: false,
-          streetViewControl: false
-        });
-
-        // Set the initial Street View camera to the center of the map
-        sv.getPanorama({location: berkeley, radius:50}, processSVData);
-
-        // Look for a nearby Street View panorama when the map is clicked.
-        // getPanoramaByLocation will return the nearest pano when the
-        // given radius is 50 meters or less.
-        // map.addListener('click', function(event) {
-        //   sv.getPanorama({location: event.latLng, radius: 50}, processSVData);
-        // });
-
-        addSpots(map);
-        addSpots(panorama);
-      }
-
-      function processSVData(data, status) {
-        if (status === google.maps.StreetViewStatus.OK) {
-          var marker = new google.maps.Marker({
-            position: data.location.latLng,
-            map: map,
-            title: data.location.description,
-          });
-
-          panorama.setPano(data.location.pano);
-          var heading = google.maps.geometry.spherical.computeHeading(data.location.latLng,mapMarkers[0].getPosition());
-          panorama.setPov({
-            heading: heading,
-            pitch: 0
-          });
-          panorama.setVisible(true);
-
-
-
-
-          marker.addListener('click', function() {
-            var markerPanoID = data.location.pano;
-            // Set the Pano to use the passed panoID.
-            panorama.setPano(markerPanoID);
-            panorama.setPov({
-              heading: 270,
-              pitch: 0
-            });
-            panorama.setVisible(true);
-          });
-        } else {
-          console.error('Street View data not found for this location.');
-        }
-      }
-
-      function addSpots(resultsMap){
-        var contentString = '<div id="content">'+
-        '<div id="siteNotice">'+
-        '</div>'+
-        '<h4 id="firstHeading" class="page-header">{{spot.address}}</h4>'+
-        '<div id="bodyContent">'+
-        '<h5>Distance: {{spot.distance}}</h5>' +
-
-        '<h5>Price: $5.00</h5>' +
-        '<h5>Seller Rating: 4.5</h5>' +
-        '<h5>Spot Rating: 3.5</h5>' +
-        '<h5>Available Until: 7:30 PM</h5>' +
-        '<br/><a class="btn btn-lg btn-success" href="reserve?id={{spot.id}}"' +
-        ' style="width: 100%;"> Reserve Spot</a>' +
-        '</div>'+
-        '</div>';
-
-        var infowindow = new google.maps.InfoWindow({
-          content: contentString
-        });
-        var marker = new google.maps.Marker({
-          map: resultsMap,
-          icon: "https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerSmall.png",
-          position: new google.maps.LatLng({{spot.location.y}}, {{spot.location.x}})
-        });
-        marker.content = contentString;
-        marker.addListener('mouseover', function() {
-          resultsMap.infowindow.setContent(this.content);
-          resultsMap.infowindow.open(resultsMap,this);
-          // infowindow.open(resultsMap, this);
-          // resultsMap.setCenter(this.position);
-        });
-        // marker.addListener('mouseout', function() {
-        //   resultsMap.infowindow.close(resultsMap,this);
-        // });
-        mapMarkers.push(marker);
-
-      }
-    </script>
-    <script async defer
-    src="http://maps.google.com/maps/api/js?sensor=false&callback=initMap">
-    </script>
+<!-- Init Google Map Street and Sattellite View -->
+   <script>
+     function createMap(){
+        var lat = {{spot.lat}};
+        var lng = {{spot.lng}};
+        initMap(lat,lng);
+     }
+   </script>
+  <script async defer
+    src="http://maps.google.com/maps/api/js?sensor=false&callback=createMap">
+  </script>
+<!-- End Map -->
 {% endblock %}

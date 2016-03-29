@@ -2,7 +2,7 @@
 {% block content %}
 <style type="text/css">
 
-#map { height: 80%;}
+#map { height: 86%;}
 .row {
     padding-top: 0px;
     margin-top: -20px;
@@ -60,8 +60,8 @@
       <h5><span class="label label-primary pull-right">${{spot.get_price}}</span></h5>
       <h5>{{spot.shorthand_address}}
       </h5>
-      <p><i class="material-icons" style="color:blue; opacity:0.5;">location_on</i>Distance  {{ spot.to_miles|floatformat:2 }} miles</p>
-      <p><i class="material-icons" style="color:blue; opacity:0.5;">directions_walk</i>Walking:  {{spot.walking_time}} minutes</p>
+      <p><i class="material-icons" style="color:grey;">location_on</i>Distance  {{ spot.to_miles|floatformat:2 }} miles</p>
+      <p><i class="material-icons" style="color:grey;">directions_walk</i>Walking:  {{spot.walking_time}} minutes</p>
     </a>
 
     {% empty %}
@@ -70,7 +70,7 @@
   </div>
 </div>
   <div class="col-md-10">
-    <form name="searchForm" action="/park" method="GET" role="search" style="padding-left: 10px;padding-right: 10px;">
+    <form name="searchForm" action="/park" method="GET" role="search" style="padding-left: 10px;padding-right: 10px; padding-top:10px;">
       <div class="form-group">
         <div class="input-group">
           <input id="searchBox" name="search" type="text" class="form-control input-lg control" placeholder="Search an address for spots near by">
@@ -164,7 +164,10 @@ function showPosition(position) {
   gMap = new google.maps.Map(document.getElementById('map'));
   gMap.setZoom(zoom);      // This will trigger a zoom_changed on the map
   gMap.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
-  reverseGeocode(position.coords.latitude, position.coords.longitude);
+  reverseGeocode(position.coords.latitude, position.coords.longitude, function(result){
+      $("#searchBox").val(result);
+      submitForm();
+});
   $("#loading").hide();
 }
 
@@ -192,23 +195,6 @@ function geocodeCustom(address){
       $("#Lng").val(results[0].geometry.location.lng());
     } else {
       alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
-
-function reverseGeocode(latitude, longitude){
-  //Function to generate an aprox address from lat, lng.
-  var geocoder = new google.maps.Geocoder();
-  var latlng = {lat: latitude, lng: longitude}
-  geocoder.geocode({'location': latlng}, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      if (results[1]) {
-        $("#searchBox").val(results[1].formatted_address);
-        submitForm();
-      } else {
-      }
-    } else {
-      return "";
     }
   });
 }

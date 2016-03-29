@@ -55,10 +55,14 @@ def add_spot(request):
     lattitude = float(request.POST.get("lat"))
     longitude = float(request.POST.get("lng"))
     address = request.POST.get("address")
+    spot_number = request.POST.get("spot_number")
+    instructions = request.POST.get("instructions")
     new_spot = Spot()
     new_spot.owner = owner
     new_spot.location = Point(longitude, lattitude)
     new_spot.address = address
+    new_spot.spot_number = spot_number
+    new_spot.instructions = instructions
     new_spot.save()
     # Find geohash to get grid value and retrieve geobucket.
     spot_geohash = geohash_encode(lattitude, longitude)[:6]
