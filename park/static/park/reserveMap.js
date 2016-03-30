@@ -2,12 +2,12 @@
  * Click the map to set a new location for the Street View camera.
  */
 
-function initMap(lat, lng){
+function createReserveMap(lat, lng, sv_lat, sv_lng){
   var mapLocation = new google.maps.LatLng(lat, lng);
-  streetViewMap(mapLocation, 'pano', function(result){
-      placeMarker(result, mapLocation, false);
+  var povLocation = new google.maps.LatLng(sv_lat, sv_lng);
+  streetViewMap(povLocation, 'pano', function(result){
+      placeMarker(result, povLocation, false);
   });
-
   // Set up the map.
   var map = new google.maps.Map(document.getElementById('map'), {
     center: mapLocation,

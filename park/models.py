@@ -15,6 +15,7 @@ class Spot(models.Model):
   available = models.BooleanField(default=True)
   in_use = models.BooleanField(default=False)
   location = models.PointField()
+  sv_location = models.PointField(null=True)
   rating = models.IntegerField(default=0)
   num_ratings = models.IntegerField(default=0)
   num_reservations = models.IntegerField(default=0)
@@ -53,6 +54,18 @@ class Spot(models.Model):
       Returns the longitude of the spot location.
     """
     return self.location.x
+
+  def sv_lat(self):
+    """
+      Returns the latitude of the street view spot location
+    """
+    return self.sv_location.y
+
+  def sv_lng(self):
+    """
+      Returns the longitude of the street view spot location.
+    """
+    return self.sv_location.x
 
   #TODO Remove from spot as method and add an instance variable of geobucket
   def get_price(self):

@@ -31,59 +31,72 @@
   </div>
   <div class="col-md-6">
     <div class="panel panel-primary">
-      <h4 class="panel-heading">Add a spot</h4>
+      <h4 class="panel-heading">Add a spot <small class="counter pull-right" style="color:white;"></small></h4>
       <div class="panel-content">
         <div class="well" >
-
+          {% load staticfiles%}
+          <script src="{% static "park/addSpot.js" %}"></script>
           <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/park/spots/">
-            <div class="wrapper">
-              <div id="map" style="display: none;"></div>
-            </div>
-
-            <!-- Street View Map -->
-            <div class="wrapper">
-              <div id="street_map" style="display:none;"></div>
-            </div>
             {% csrf_token %}
-            <fieldset>
-              <div class="control-group">
-                <h5>Address<small id="available" class="label label-success pull-right" style="display:none;"></small></h5>
-                <div class="controls">
-                  <input  id="Address" type="text" name="address" placeholder="" class="form-control input-lg" required>
+            <div id="spot1" class="spotform">
+              <fieldset>
+                <div class="wrapper">
+                  <div id="map" style="display: none;"></div>
                 </div>
-              </div>
-
-
-              <div class="control-group">
-                <h5>Spot Number </h5>
-                <div class="controls">
-                  <input class="form-control input-lg" type="text" placeholder="Leave blank for no spot number" name="spot_number">
-                </div>
-              </div>
-              <div class="control-group">
-                <h5>Instructions </h5>
-                <div class="controls">
-                  <input class="form-control input-lg" type="text" placeholder="Example: Please pull as far right as possible in driveway." name="instructions" required>
-                </div>
-                <br/>
-                <div class="control-group">
+                <div class="control-group" id="address_header">
+                  <h5>Address<small id="available" class="label label-success pull-right" style="display:none;"></small></h5>
                   <div class="controls">
-                    <label for="termsCheckbox" style="padding-left: 5px;">
-                      <input id="termsCheckbox" type="checkbox" required>
-                      I understand and agree to the <a href="/terms">terms and conditions.</a>
-                    </label>
+                   <input  id="Address" type="text" name="address" placeholder="123 A Drive, San Jose, CA, United States" class="form-control input-lg" required>
                   </div>
                 </div>
-                <br/>
-                <input type="hidden" id="Lat" name="lat">
-                <input type="hidden" id="Lng" name="lng">
-                <div class="control-group">
-                  <!-- Button -->
-                  <div class="controls">
-                    <button id="submitButton" class="btn btn-success btn-lg" type="" style="display: block; width: 100%;"> Add Spot</button>
-                  </div>
-                </div>
+                <button class="btn btn-primary next2 pull-right" id="next2" type="button" style="margin-top: 20px; display:none;">Next</button>
               </fieldset>
+            </div>
+            <div id="spot2" class="spotform" style="display:none;">
+              <fieldset>
+                <!-- Street View Map -->
+                <div class="wrapper">
+                  <div id="street_map" style="display:none;"></div>
+                </div>
+                <button class="btn btn-primary back1" type="button" style="margin-top: 20px;">Back</button>
+                <button class="btn btn-primary next3 pull-right" type="button" style="margin-top: 20px;">Next</button>
+              </fieldset>
+            </div>
+            <div id="spot3" class="spotform" style="display:none;">
+              <fieldset>
+                <div class="control-group">
+                  <h5>Spot Number </h5>
+                  <div class="controls">
+                    <input class="form-control input-lg" type="text" placeholder="Leave blank for no spot number" name="spot_number">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <h5>Instructions </h5>
+                  <div class="controls">
+                    <input class="form-control input-lg" type="text" placeholder="Example: Please pull as far right as possible in driveway." name="instructions" required>
+                  </div>
+                  <br/>
+                  <div class="control-group">
+                    <div class="controls">
+                      <label for="termsCheckbox" style="padding-left: 5px;">
+                        <input id="termsCheckbox" type="checkbox" required>
+                        I understand and agree to the <a href="/terms">terms and conditions.</a>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-primary back2" type="button" style="margin-top: 20px;">Back</button>
+                
+                <button id="submitButton" class="btn btn-success btn-lg pull-right" type="" style="display: block; margin-top: 20px;"> Add Spot</button>
+              </fieldset>
+            </div>
+
+            <!-- Hidden Input for Lat and Lng -->
+            <input type="hidden" id="Lat" name="lat">
+            <input type="hidden" id="Lng" name="lng">
+            <input type="hidden" id="sv_lat" name="sv_lat">
+            <input type="hidden" id="sv_lng" name="sv_lng">
+
             </form>
           </div>
         </div>
@@ -206,6 +219,8 @@
     geocodeCustom($("#Address").val());
     $("#map").show("slow", function() {
       google.maps.event.trigger(map, 'resize');
+      $('#next2').show();
+
     });
     }
   }
@@ -262,11 +277,6 @@
 
   }
 
-
-
-  // function searchSpots(lat, lng, 4500){
-  //
-  // }
   </script>
 
   <script async defer

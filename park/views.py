@@ -52,20 +52,23 @@ def add_spot(request):
     return render(request, 'park/spot.html', {'spots' : spots})
   elif request.method =='POST':
     owner = request.user
-    lattitude = float(request.POST.get("lat"))
-    longitude = float(request.POST.get("lng"))
+    lat = float(request.POST.get("lat"))
+    lng = float(request.POST.get("lng"))
+    sv_lat = float(request.POST.get("sv_lat"))
+    sv_lng = float(request.POST.get("sv_lng"))
     address = request.POST.get("address")
     spot_number = request.POST.get("spot_number")
     instructions = request.POST.get("instructions")
     new_spot = Spot()
     new_spot.owner = owner
-    new_spot.location = Point(longitude, lattitude)
+    new_spot.location = Point(lng, lat)
+    new_spot.sv_location = Point(sv_lng, sv_lat)
     new_spot.address = address
     new_spot.spot_number = spot_number
     new_spot.instructions = instructions
     new_spot.save()
     # Find geohash to get grid value and retrieve geobucket.
-    spot_geohash = geohash_encode(lattitude, longitude)[:6]
+    spot_geohash = geohash_encode(lat, lng)[:6]
     geobucket, _ = GeoBucket.objects.get_or_create(geohash=spot_geohash)
     # Add a spot to the given geobucket and save.
     geobucket.spot()

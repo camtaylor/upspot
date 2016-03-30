@@ -61,12 +61,13 @@ function reverseGeocode(lat, lng, callback){
     null
 */
 function placeMarker(map, location, draggable){
-  var marker = new google.maps.Marker({
+  var p_marker = new google.maps.Marker({
     map: map,
     position: location,
     icon: "https://s3-us-west-2.amazonaws.com/upspot/upspotMarkerSmall.png",
     draggable: draggable
   });
+  return p_marker;
 }
 
 /*
@@ -92,7 +93,7 @@ function streetViewMap(location, id, callback) {
       var heading = google.maps.geometry.spherical.computeHeading(data.location.latLng,location);
       panorama.setPov({
         heading: heading,
-        pitch: 0
+        pitch: 0,
       });
       panorama.setVisible(true);
       callback(panorama);

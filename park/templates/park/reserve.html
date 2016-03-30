@@ -69,7 +69,9 @@ body {
      function createMap(){
         var lat = {{spot.lat}};
         var lng = {{spot.lng}};
-        initMap(lat,lng);
+        var sv_lat = {{spot.sv_lat}};
+        var sv_lng = {{spot.sv_lng}};
+        createReserveMap(lat,lng, sv_lat, sv_lng);
      }
    </script>
   <script async defer
